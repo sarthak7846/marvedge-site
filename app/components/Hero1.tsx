@@ -42,7 +42,7 @@ const TiltCard: React.FC<TiltCardProps> = ({
     const centerY = rect.top + rect.height / 2;
     const mouseX = e.clientX - centerX;
     const mouseY = e.clientY - centerY;
-    const maxTilt = 20;
+    const maxTilt = 15;
     const tiltX = -(mouseY / (rect.height / 2)) * maxTilt;
     const tiltY = (mouseX / (rect.width / 2)) * maxTilt;
     x.set(tiltX);
@@ -54,10 +54,19 @@ const TiltCard: React.FC<TiltCardProps> = ({
     y.set(0);
   };
 
+  const iconBgColors = [
+    "bg-[#f3ebff]",
+    "bg-[#e6f1ff]",
+    "bg-[#e9fbe9]",
+    "bg-[#fff2e5]",
+    "bg-[#ebf6ff]",
+    "bg-[#ffeef1]",
+  ];
+
   return (
     <motion.div
       ref={cardRef}
-      className="bg-white rounded-xl shadow-lg p-8 text-center w-full"
+      className="bg-white rounded-2xl shadow-md p-8 text-center w-full"
       style={{
         perspective: 1000,
         rotateX,
@@ -87,7 +96,9 @@ const TiltCard: React.FC<TiltCardProps> = ({
       }}
     >
       <motion.div
-        className="relative w-16 h-16 mx-auto mb-4 bg-[#e6e6fa] rounded-lg flex items-center justify-center"
+        className={`relative w-16 h-16 mx-auto mb-4 rounded-lg flex items-center justify-center  ${
+          iconBgColors[index % iconBgColors.length]
+        }`}
         animate={{
           rotate: [0, 5, -5, 0],
           scale: [1, 1.1, 1],
@@ -101,7 +112,7 @@ const TiltCard: React.FC<TiltCardProps> = ({
         <span className="text-2xl">{icon}</span>
       </motion.div>
       <div className="relative w-full h-32 mb-4"></div>
-      <h3 className="text-2xl font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-xl font-semibold text-gray-800 mt-2">{title}</h3>
       <p className="mt-2 text-gray-600 text-base">{description}</p>
       <motion.a
         href="#"
@@ -134,10 +145,10 @@ const Hero1: React.FC = () => {
       icon: "🔗",
     },
     {
-      title: "Performance Optimization",
+      title: "Smart Content Analysis",
       description:
-        "Optimize video loading speeds and performance for seamless playback across all devices.",
-      icon: "⚡",
+        "Our AI understands your product features, benefits, and target audience to create relevant, engaging content.",
+      icon: "🧠",
     },
     {
       title: "Conversion Optimized",
@@ -152,10 +163,10 @@ const Hero1: React.FC = () => {
       icon: "🎥",
     },
     {
-      title: "Performance Optimization",
+      title: "Multi-Format Export",
       description:
-        "Optimize video loading speeds and performance for seamless playback across all devices.",
-      icon: "⚡",
+        "Export video optimized for web, social media, email campaigns, and presentations with one click.",
+      icon: "📱",
     },
     {
       title: "Audience Engagement",
@@ -246,56 +257,10 @@ const Hero1: React.FC = () => {
             />
           ))}
         </motion.div>
-
-        <motion.div
-          className="mt-20 bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6"
-          initial={{ opacity: 0, y: 60, scale: 0.9 }}
-          animate={{
-            opacity: isInView ? 1 : 0,
-            y: isInView ? 0 : 60,
-            scale: isInView ? 1 : 0.9,
-          }}
-          transition={{
-            duration: 0.8,
-            ease: easeOut,
-            delay: 0.6,
-          }}
-          whileHover={{
-            boxShadow: "0 25px 50px rgba(0, 0, 0, 0.1)",
-            y: -5,
-          }}
-        >
-          <div className="max-w-md">
-            <h2 className="text-3xl md:text-4xl font-semibold text-black leading-tight">
-              See It In Action
-            </h2>
-            <p className="mt-4 text-gray-600 text-lg">
-              Watch how our AI transforms a simple product URL into a compelling
-              demo video that showcases features, benefits, and drives
-              conversions.
-            </p>
-            <ul className="mt-6 space-y-2 text-gray-600">
-              <li className="flex items-center">
-                <span className="mr-2 text-green-600">✔</span> Automatic feature
-                detection and highlighting
-              </li>
-              <li className="flex items-center">
-                <span className="mr-2 text-green-600">✔</span> Professional
-                voiceover and background music
-              </li>
-              <li className="flex items-center">
-                <span className="mr-2 text-green-600">✔</span> Compelling
-                call-to-action integration
-              </li>
-            </ul>
-            <button className="mt-6 bg-[#8a6ec5] text-white px-6 py-3 rounded-lg hover:bg-[#6B46C1] transition">
-              Try it for free
-            </button>
-          </div>
-          <div className="w-full md:w-1/2 h-[300px] bg-[#c2b3f5] rounded-lg flex items-center justify-center"></div>
-        </motion.div>
       </div>
-      <Hero2 />
+      <div className="mt-24">
+        <Hero2 />
+      </div>
     </section>
   );
 };

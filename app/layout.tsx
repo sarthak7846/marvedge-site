@@ -1,19 +1,16 @@
-import type { Metadata } from "next";
+"use client";
 import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "Marvedge",
-  description: "Get started by marvedging",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className="overflow-x-hidden">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body className="overflow-x-hidden">{children}</body>
     </html>
   );
 }

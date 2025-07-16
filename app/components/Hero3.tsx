@@ -1,11 +1,42 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { easeOut } from "framer-motion";
 import Footer from "./Footer";
 
 const Hero3: React.FC = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    name: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const res = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    if (res.ok) {
+      setSuccess(true);
+      setFormData({ email: "", name: "", message: "" });
+    } else {
+      alert("Failed to send. Please try again.");
+    }
+
+    setLoading(false);
+  };
   return (
     <>
       <div className="w-full bg-gradient-to-br from-white via-purple-50 to-green-100 py-24 px-4 flex justify-center items-center">
@@ -31,44 +62,44 @@ const Hero3: React.FC = () => {
             Be among the first to access Marvedge and transform your videos to eye catchy demo
           </p>
 
-          <form className="space-y-5">
-            {[
-              { type: "email", placeholder: "Enter Your Email address" },
-              { type: "text", placeholder: "Enter Your Full Name" },
-              { type: "text", placeholder: "Enter Your Message" },
-            ].map((input, index) => (
-              <motion.input
-                key={index}
-                type={input.type}
-                placeholder={input.placeholder}
-                className="w-full px-6 py-4 rounded-[12px] border border-[#e0d8ff] bg-white placeholder-gray-500 text-gray-800 text-base focus:outline-none focus:ring-2 focus:ring-purple-400"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  ease: easeOut,
-                  delay: index * 0.1,
-                }}
-                viewport={{ once: true }}
-              />
-            ))}
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            <motion.input
+              name="email"
+              type="email"
+              placeholder="Enter Your Email address"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-[12px] border border-[#e0d8ff] bg-white placeholder-gray-500 text-gray-800 text-base focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+            <motion.input
+              name="name"
+              type="text"
+              placeholder="Enter Your Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-[12px] border border-[#e0d8ff] bg-white placeholder-gray-500 text-gray-800 text-base focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+            <motion.input
+              name="message"
+              type="text"
+              placeholder="Enter Your Message"
+              value={formData.message}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-[12px] border border-[#e0d8ff] bg-white placeholder-gray-500 text-gray-800 text-base focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
 
             <motion.button
               type="submit"
+              disabled={loading}
               className="w-full py-4 bg-[#9e7dff] hover:bg-[#8d6aff] text-white font-medium rounded-[10px] text-lg transition shadow-md"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.4,
-                ease: easeOut,
-                delay: 0.4,
-              }}
-              viewport={{ once: true }}
             >
-              Join the waitlist
+              {loading ? "Sending..." : "Join the waitlist"}
             </motion.button>
+            {success && (
+              <p className="text-green-600 font-medium">Message sent successfully!</p>
+            )}
           </form>
         </motion.div>
       </div>

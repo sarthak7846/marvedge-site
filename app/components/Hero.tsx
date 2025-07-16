@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { FaPlay } from "react-icons/fa6";
-import { Sparkles } from "lucide-react";
 import {
   motion,
   useAnimationControls,
@@ -138,31 +136,6 @@ const Hero: React.FC = () => {
               product URL and automatically generates professional demo videos
               that convert visitors into customers.
             </motion.p>
-
-            <motion.div
-              className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-4 sm:gap-5"
-              variants={fadeInUp}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              transition={{ duration: 0.8, ease: easeOut, delay: 0.4 }}
-            >
-              <motion.button
-                className="flex items-center justify-center cursor-pointer gap-2 bg-[#6B46C1] hover:bg-[#553c9a] text-gray-200 px-6 sm:px-10 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition whitespace-nowrap"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaPlay className="text-lg sm:text-xl" />
-                Create Demo Video
-              </motion.button>
-              <motion.button
-                className="flex items-center justify-center cursor-pointer gap-2 border border-gray-300 bg-white shadow-sm px-6 sm:px-10 py-3 sm:py-4 rounded-lg text-gray-600 text-base sm:text-lg font-medium hover:shadow-md transition whitespace-nowrap"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Sparkles size={18} />
-                Explore Examples
-              </motion.button>
-            </motion.div>
           </motion.div>
 
           <motion.div

@@ -1,3 +1,11 @@
+"use client";
+import Navbar from "../app/components/Navbar";
+
 export default function Home() {
-  return <div>Put the landing page here</div>;
+  
+  return (
+    <div>
+      <Navbar />
+    </div>
+  );
 }

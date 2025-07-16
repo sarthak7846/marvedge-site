@@ -16,12 +16,10 @@ const Hero3: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: easeOut }}
         >
-          {/* Tagline */}
           <p className="text-sm font-black text-purple-600 uppercase mb-3 tracking-wide">
             Get <span className="text-purple-400">Early Access</span>
           </p>
 
-          {/* Heading */}
           <h2 className="text-[2.75rem] leading-tight md:text-[3rem] font-extrabold text-gray-900 mb-5">
             Join Our{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-700">
@@ -29,12 +27,10 @@ const Hero3: React.FC = () => {
             </span>
           </h2>
 
-          {/* Subheading */}
           <p className="text-gray-700 text-base md:text-lg mb-10">
             Be among the first to access Marvedge and transform your videos to eye catchy demo
           </p>
 
-          {/* Form */}
           <form className="space-y-5">
             {[
               { type: "email", placeholder: "Enter Your Email address" },

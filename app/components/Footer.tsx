@@ -147,14 +147,12 @@ const Footer: React.FC = () => {
           style={{ scale }}
         >
           <div className="grid grid-cols-1 sm:grid-cols-3  gap-6">
-            {/* Company Links */}
             <LinkSection
               title="Company"
               items={["About Us", "Blog"]}
               index={0}
             />
 
-            {/* Social Icons */}
             <motion.div
               className="min-w-[100px]"
               initial={{ opacity: 0, y: 30 }}

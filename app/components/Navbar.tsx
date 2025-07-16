@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Hero from "./Hero";
-import Link from "next/link"; // ✅ Use Link for navigation
+import Link from "next/link"; 
 
 const NavButton: React.FC<{
   children: React.ReactNode;

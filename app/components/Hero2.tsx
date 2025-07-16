@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   motion,
   useInView,
@@ -31,6 +31,33 @@ const Hero2: React.FC = () => {
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -50]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, 50]);
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.02, 1]);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    name: "",
+    company: "",
+    url: "",
+  });
+
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const { email, name, company } = formData;
+
+    if (email && name && company) {
+      setSuccessMsg(
+        "🎉 You're on the list! Marvedge is coming your way soon. Hang tight!"
+      );
+      setFormData({ email: "", name: "", company: "", url: "" });
+    } else {
+      setSuccessMsg("❌ Please fill all required fields.");
+    }
+  };
 
   const features = [
     {
@@ -179,28 +206,44 @@ const Hero2: React.FC = () => {
             y: -5,
           }}
         >
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {[
-              { type: "email", placeholder: "Enter your Email", icon: <Mail size={18} /> },
-              { type: "text", placeholder: "Full Name", icon: <User size={18} /> },
-              { type: "text", placeholder: "Company", icon: <Building2 size={18} /> },
-              { type: "text", placeholder: "Product URL (Optional)",
-                icon: <LinkIcon size={18} /> },
+              {
+                name: "email",
+                type: "email",
+                placeholder: "Enter your Email",
+                icon: <Mail size={18} />,
+              },
+              {
+                name: "name",
+                type: "text",
+                placeholder: "Full Name",
+                icon: <User size={18} />,
+              },
+              {
+                name: "company",
+                type: "text",
+                placeholder: "Company",
+                icon: <Building2 size={18} />,
+              },
+              {
+                name: "url",
+                type: "text",
+                placeholder: "Product URL (Optional)",
+                icon: <LinkIcon size={18} />,
+              },
             ].map((input, index) => (
               <motion.input
                 key={index}
+                name={input.name}
                 type={input.type}
                 placeholder={input.placeholder}
+                value={formData[input.name as keyof typeof formData]}
+                onChange={handleChange}
                 className="w-full py-4 px-5 rounded-lg bg-purple-100 text-gray-700 text-base focus:outline-none focus:ring-2 focus:ring-purple-500"
-                whileFocus={{
-                  scale: 1.02,
-                  boxShadow: "0 0 20px rgba(147, 51, 234, 0.2)",
-                }}
+                whileFocus={{ scale: 1.02 }}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: isInView ? 1 : 0,
-                  y: isInView ? 0 : 20,
-                }}
+                animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
                 transition={{
                   duration: 0.5,
                   ease: easeOut,
@@ -208,30 +251,30 @@ const Hero2: React.FC = () => {
                 }}
               />
             ))}
+
             <motion.button
               type="submit"
               className="w-full py-4 bg-white text-purple-600 font-semibold rounded-lg flex items-center justify-center gap-2 hover:bg-purple-100 transition"
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
-                y: -2,
-              }}
+              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 20 }}
-              animate={{
-                opacity: isInView ? 1 : 0,
-                y: isInView ? 0 : 20,
-              }}
-              transition={{
-                duration: 0.5,
-                ease: easeOut,
-                delay: 0.9,
-              }}
+              animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
+              transition={{ duration: 0.5, ease: easeOut, delay: 0.9 }}
             >
               <Send size={18} />
               Start Free Trial
             </motion.button>
           </form>
+          {successMsg && (
+            <motion.p
+              className="text-sm mt-4 font-medium text-green-600"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {successMsg}
+            </motion.p>
+          )}
         </motion.div>
       </div>
       <Hero3 />

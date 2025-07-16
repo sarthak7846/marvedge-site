@@ -9,13 +9,20 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Twitter, Instagram, Linkedin } from "lucide-react";
 
 const socialIcons = [
-  { icon: Facebook, label: "Facebook" },
-  { icon: Twitter, label: "Twitter" },
-  { icon: Instagram, label: "Instagram" },
-  { icon: Linkedin, label: "LinkedIn" },
+  { icon: Twitter, label: "Twitter", href: "https://x.com/marvedge" },
+  {
+    icon: Instagram,
+    label: "Instagram",
+    href: "https://www.instagram.com/marvedgemedia?igsh=aGcxOXpyNGJkMWdj",
+  },
+  {
+    icon: Linkedin,
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/marvedge/",
+  },
 ];
 
 const LinkSection: React.FC<{
@@ -168,8 +175,12 @@ const Footer: React.FC = () => {
               </h3>
               <div className="flex gap-4 items-center">
                 {socialIcons.map((icon, i) => (
-                  <motion.button
+                  <motion.a
                     key={i}
+                    href={icon.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={icon.label}
                     className="bg-[#3c3160] hover:bg-[#a68cff] transition-colors rounded-[1.5rem] w-14 h-14 flex items-center justify-center shadow-md"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -182,7 +193,7 @@ const Footer: React.FC = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <icon.icon className="text-white w-7 h-7 md:w-8 md:h-8" />
-                  </motion.button>
+                  </motion.a>
                 ))}
               </div>
             </motion.div>

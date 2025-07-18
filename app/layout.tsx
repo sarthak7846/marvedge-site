@@ -9,6 +9,14 @@ export default function RootLayout({
     <html lang="en" className="overflow-x-hidden">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>{`
+          html, body {
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            min-height: 100vh;
+          }
+        `}</style>
       </head>
       <body className="overflow-x-hidden">{children}</body>
     </html>

@@ -2,8 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import Hero from "./Hero";
-import Link from "next/link"; 
+import Link from "next/link";
 
 const NavButton: React.FC<{
   children: React.ReactNode;
@@ -32,9 +31,11 @@ const Navbar: React.FC = () => {
               className="w-12 h-12 md:w-16 md:h-16 object-contain"
               priority
             />
-            <span className="text-[#8C5BFF] text-xl md:text-2xl font-semibold">
-              Marvedge
-            </span>
+            <Link href="/">
+              <span className="text-[#8C5BFF] text-xl md:text-2xl font-semibold cursor-pointer hover:text-[#615fa1] transition">
+                Marvedge
+              </span>
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-8 text-[#313053] font-medium">
@@ -43,7 +44,6 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </nav>
-      <Hero />
     </>
   );
 };

@@ -175,11 +175,16 @@ export default function BlogPage() {
       category: ["Tech"],
     },
   ];
-  const [blogs, setBlogs] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<
+    {
+      title: string;
+      img: string;
+      summary: string;
+      category: string[];
+    }[]
+  >([]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
-  const [contact, setContact] = useState({ name: "", email: "", message: "" });
-  const [showContact, setShowContact] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
 
   const handleInput = (
@@ -212,17 +217,6 @@ export default function BlogPage() {
     setShowCreate(false);
     setNewBlog({ title: "", img: "", summary: "", category: ["Finance"] });
     setImagePreview(""); // Clear preview on publish
-  };
-
-  const handleContactInput = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setContact({ ...contact, [e.target.name]: e.target.value });
-  };
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Message sent! (Demo only)");
-    setContact({ name: "", email: "", message: "" });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -283,15 +277,13 @@ export default function BlogPage() {
                 justifyContent: "center",
                 gap: 8,
               }}
-            >
-              <span style={{ fontSize: 22, margin: "18px 0" }}>✦</span> Latest
-            </span>
+            ></span>
             <h1
               style={{
                 fontSize: 48,
                 fontWeight: 800,
                 color: "#313053",
-                margin: "8px 0",
+                margin: "48px 0",
               }}
             >
               Discover our <span style={{ color: "#8C5BFF" }}>Insights</span>
@@ -487,8 +479,13 @@ export default function BlogPage() {
             >
               All <span style={{ color: "#8C5BFF" }}>Blog Posts</span>
             </h2>
-            <div className="blog-header-controls" style={{display:'flex',alignItems:'center',gap:12}}>
-              <span style={{ color: "#4c3c4c", fontSize: 22 }}>🔽 Sort By :</span>
+            <div
+              className="blog-header-controls"
+              style={{ display: "flex", alignItems: "center", gap: 12 }}
+            >
+              <span style={{ color: "#4c3c4c", fontSize: 22 }}>
+                🔽 Sort By :
+              </span>
               <select
                 style={{
                   background: "#8C5BFF",
@@ -521,8 +518,8 @@ export default function BlogPage() {
                   boxShadow: "0 2px 8px #8C5BFF22",
                   cursor: "pointer",
                   marginLeft: 8,
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   gap: 6,
                 }}
                 onClick={() => setShowCreate((v) => !v)}
@@ -604,14 +601,45 @@ export default function BlogPage() {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                style={{ width: "100%", padding: 8, fontSize: 16, borderRadius: 8, border: "1.5px solid #b9aaff", background: "#fff" }}
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  fontSize: 18,
+                  borderRadius: 8,
+                  border: "1.5px solid #b9aaff",
+                  background: "#f6f3ff",
+                  color: "#313053",
+                  boxSizing: "border-box",
+                }}
               />
               {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  style={{ width: 180, height: 120, objectFit: "cover", borderRadius: 12, margin: "8px 0" }}
-                />
+                <div
+                  style={{
+                    width: "100%",
+                    height: 240,
+                    background: "#fff",
+                    borderRadius: 12,
+                    margin: "8px 0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1.5px solid #b9aaff",
+                  }}
+                >
+                  <Image
+                    src={imagePreview}
+                    alt="Preview"
+                    width={240}
+                    height={240}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      borderRadius: 10,
+                      background: "transparent",
+                    }}
+                  />
+                </div>
               )}
               {/* End image file input and preview */}
               {/* Custom Multi-Select Category UI */}
@@ -1028,152 +1056,24 @@ export default function BlogPage() {
                     marginBottom: 12,
                   }}
                 >
-                  For more Querries:
+                  Company Contact
                 </div>
-                <button
-                  style={{
-                    background: "#8C5BFF",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 14,
-                    fontSize: 26,
-                    fontWeight: 600,
-                    padding: "18px 80px",
-                    boxShadow: "0 2px 8px #8C5BFF22",
-                    cursor: "pointer",
-                    marginTop: 8,
-                  }}
-                  onClick={() => setShowContact((v) => !v)}
+                <div
+                  style={{ color: "#313053", fontSize: 18, marginBottom: 6 }}
                 >
-                  Contact Us
-                </button>
-                {showContact && (
-                  <div
-                    style={{
-                      marginTop: 24,
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <form
-                      style={{
-                        width: "100%",
-                        maxWidth: 500,
-                        background: "#f6f3ff",
-                        borderRadius: 24,
-                        boxShadow: "0 4px 24px #e6e0fa33",
-                        padding: 32,
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 18,
-                        alignItems: "center",
-                        position: "relative",
-                      }}
-                      onSubmit={handleContactSubmit}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => setShowContact(false)}
-                        style={{
-                          position: "absolute",
-                          top: 18,
-                          right: 18,
-                          background: "#ede7ff",
-                          border: "1.5px solid #b9aaff",
-                          borderRadius: "50%",
-                          width: 36,
-                          height: 36,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 22,
-                          color: "#8C5BFF",
-                          cursor: "pointer",
-                          boxShadow: "0 2px 8px #e6e0fa22",
-                          zIndex: 2,
-                        }}
-                        aria-label="Close"
-                      >
-                        ×
-                      </button>
-                      <h3
-                        style={{
-                          fontSize: 28,
-                          fontWeight: 700,
-                          color: "#8C5BFF",
-                          margin: 0,
-                        }}
-                      >
-                        Contact Us
-                      </h3>
-                      <input
-                        name="name"
-                        placeholder="Your Name"
-                        required
-                        value={contact.name}
-                        onChange={handleContactInput}
-                        style={{
-                          width: "100%",
-                          padding: 12,
-                          fontSize: 18,
-                          borderRadius: 8,
-                          border: "1.5px solid #b9aaff",
-                          background: "#fff",
-                        }}
-                      />
-                      <input
-                        name="email"
-                        type="email"
-                        placeholder="Your Email"
-                        required
-                        value={contact.email}
-                        onChange={handleContactInput}
-                        style={{
-                          width: "100%",
-                          padding: 12,
-                          fontSize: 18,
-                          borderRadius: 8,
-                          border: "1.5px solid #b9aaff",
-                          background: "#fff",
-                        }}
-                      />
-                      <textarea
-                        name="message"
-                        placeholder="Your Message"
-                        required
-                        rows={4}
-                        value={contact.message}
-                        onChange={handleContactInput}
-                        style={{
-                          width: "100%",
-                          padding: 12,
-                          fontSize: 18,
-                          borderRadius: 8,
-                          border: "1.5px solid #b9aaff",
-                          background: "#fff",
-                        }}
-                      />
-                      <button
-                        type="submit"
-                        style={{
-                          background: "#8C5BFF",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: 10,
-                          fontSize: 20,
-                          fontWeight: 600,
-                          padding: "12px 40px",
-                          cursor: "pointer",
-                          boxShadow: "0 2px 8px #8C5BFF22",
-                          marginTop: 8,
-                        }}
-                      >
-                        Send Message
-                      </button>
-                    </form>
-                  </div>
-                )}
+                  Address: Plot no 4215, A.V. complex, Gadakana, Mancheshwar,
+                  751017, Bhubaneswar, Odisha
+                </div>
+                <div
+                  style={{ color: "#313053", fontSize: 18, marginBottom: 6 }}
+                >
+                  Email: hey@marvedge.com
+                </div>
+                <div
+                  style={{ color: "#313053", fontSize: 18, marginBottom: 6 }}
+                >
+                  Phone: +91 7978141068
+                </div>
               </div>
             </div>
             {/* Right Side (Accordion) */}
@@ -1223,7 +1123,7 @@ export default function BlogPage() {
                 "Can I integrate with existing systems?",
                 "What services do you offer?",
                 "How can I get started?",
-              ].map((q, i) => (
+              ].map((q) => (
                 <div
                   key={q}
                   style={{

@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
@@ -52,7 +51,7 @@ function ContactFormSection() {
             textAlign: "center",
           }}
         >
-          Let's bring your ideas to life, reach out and say hello.
+          Let&apos;s bring your ideas to life, reach out and say hello.
         </div>
         <div
           className="about-contact-names-row"
@@ -210,7 +209,7 @@ function TeamCarousel() {
   }, []);
 
   // Helper to get the correct index with wrap-around
-  const getIdx = (offset) =>
+  const getIdx = (offset: number) =>
     (centerIdx + offset + teamMembers.length) % teamMembers.length;
 
   return (
@@ -221,7 +220,7 @@ function TeamCarousel() {
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-end",
-        gap: 32,
+        gap: 56, // Increased gap between cards
         position: "relative",
         height: 320,
         margin: "40px auto 24px auto",
@@ -251,30 +250,52 @@ function TeamCarousel() {
                 ? "0 8px 32px #8C5BFF33"
                 : "0 2px 8px #e6e0fa33",
               borderRadius: 24,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
               background: "#f6f3ff",
-              width: 260,
-              minWidth: 260,
-              height: 280,
-              overflow: "hidden",
+              padding: 0,
+              margin: 0,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "flex-end",
-              margin: 0,
+              minWidth: 180,
+              maxWidth: 320,
+              width: "auto",
             }}
           >
-            <img
-              src={member.img}
-              alt={member.name}
+            <div
               style={{
                 width: "100%",
-                height: 180,
-                objectFit: "cover",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "transparent", // or "#f6f3ff" to match card
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
-                transition: "filter 0.5s, transform 0.5s",
+                padding: 0,
+                minHeight: 180,
+                maxHeight: 320,
+                overflow: "hidden",
+                // REMOVE marginTop!
               }}
-            />
+            >
+              <Image
+                src={member.img}
+                alt={member.name}
+                width={isCenter ? 300 : 200}
+                height={isCenter ? 300 : 200}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: isCenter ? 300 : 200,
+                  objectFit: "contain",
+                  transition: "filter 0.5s, transform 0.5s, max-width 0.5s, max-height 0.5s",
+                  background: "transparent",
+                  display: "block",
+                  margin: "auto",
+                }}
+              />
+            </div>
             <div
               style={{
                 background: "#8C5BFF",
@@ -362,7 +383,7 @@ export default function AboutUsPage() {
               lineHeight: 1.1,
             }}
           >
-            We're Building the future of
+            We&apos;re Building the future of
             <br />
             <span style={{ color: "#8C5BFF" }}>Digital Innovation</span>
           </h1>
@@ -699,7 +720,7 @@ export default function AboutUsPage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          margin: "48px 0 0 0",
+          margin: "120px 0 0 0",
         }}
       >
         {/* Team Cards Row */}
@@ -717,9 +738,7 @@ export default function AboutUsPage() {
               fontStyle: "normal",
             }}
           >
-            “It’s a statement of who we are and where we’re headed. Building it
-            right demands a team that is not only skilled but aligned in
-            mindset, values, and commitment to excellence.”
+            “It&apos;s a statement of who we are and where we&apos;re headed. Building it right demands a team that is not only skilled but aligned in mindset, values, and commitment to excellence.”
           </div>
           <div
             style={{
@@ -728,9 +747,11 @@ export default function AboutUsPage() {
               alignItems: "center",
             }}
           >
-            <img
+            <Image
               src="https://randomuser.me/api/portraits/men/75.jpg"
               alt="Soumya Ranjan Nayak"
+              width={48}
+              height={48}
               style={{
                 width: 48,
                 height: 48,
@@ -745,6 +766,37 @@ export default function AboutUsPage() {
             <div style={{ color: "#8C5BFF", fontSize: 16, fontWeight: 500 }}>
               CEO, Marvedge
             </div>
+          </div>
+        </div>
+        {/* Contact Details Section */}
+        <div
+          style={{
+            margin: "48px 0 0 0",
+            padding: "32px 40px",
+            background: "#f6f3ff",
+            borderRadius: 20,
+            boxShadow: "0 2px 16px #8C5BFF11",
+            maxWidth: 500,
+            width: "100%",
+            textAlign: "left",
+            fontSize: 20,
+            color: "#3c3450",
+            fontWeight: 500,
+            lineHeight: 1.6,
+          }}
+        >
+          <div style={{ marginBottom: 16 }}>
+            <span style={{ fontWeight: 700, color: "#8C5BFF" }}>Address:</span><br />
+            Plot no 4215, A.V. complex, Gadakana, Mancheshwar, 751017,<br />
+            Bhubaneswar, Odisha
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <span style={{ fontWeight: 700, color: "#8C5BFF" }}>Email:</span><br />
+            <a href="mailto:hey@marvedge.com" style={{ color: "#3c3450", textDecoration: "underline" }}>hey@marvedge.com</a>
+          </div>
+          <div>
+            <span style={{ fontWeight: 700, color: "#8C5BFF" }}>Phone no.:</span><br />
+            <a href="tel:+917978141068" style={{ color: "#3c3450", textDecoration: "underline" }}>+91 7978141068</a>
           </div>
         </div>
       </section>

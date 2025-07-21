@@ -39,13 +39,11 @@ const Navbar: React.FC = () => {
             </Link>
           </div>
 
-          {/* Desktop nav */}
           <div className="hidden md:flex items-center space-x-8 text-[#313053] font-medium">
             <NavButton href="/aboutus">About Us</NavButton>
             <NavButton href="/blog">Blog</NavButton>
           </div>
 
-          {/* Hamburger for mobile */}
           <button
             className="md:hidden flex items-center justify-center w-10 h-10 bg-transparent transition relative z-[1003]"
             onClick={() => setMenuOpen((v) => !v)}
@@ -59,7 +57,6 @@ const Navbar: React.FC = () => {
             </svg>
           </button>
         </div>
-        {/* Mobile menu dropdown */}
         {menuOpen && (
           <div className="md:hidden absolute top-[60px] left-0 right-0 w-[100vw] bg-white rounded-b-lg shadow-lg py-4 px-0 flex flex-col items-center gap-4 text-[#313053] font-medium z-[1004] border-b border-x border-[#ede7ff]" style={{marginTop:'2px'}}>
             <Link href="/aboutus" className="text-lg w-full" onClick={() => setMenuOpen(false)}>

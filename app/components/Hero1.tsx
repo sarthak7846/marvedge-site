@@ -139,15 +139,15 @@ const Hero1: React.FC = () => {
 
   const cards = [
     {
-      title: "URL to Video Magic",
+      title: "Easy to Use",
       description:
-        "Simply paste your product URL and watch our AI create a professional demo video in minutes, not hours.",
+        "Simply upload or capture your product videos and use our platform to create a professional demo video in minutes, not hours.",
       icon: "🔗",
     },
     {
       title: "Smart Content Analysis",
       description:
-        "Our AI understands your product features, benefits, and target audience to create relevant, engaging content.",
+        "Our platform understands your product features, benefits, and target audience to create relevant, engaging content.",
       icon: "🧠",
     },
     {
@@ -169,9 +169,9 @@ const Hero1: React.FC = () => {
       icon: "📱",
     },
     {
-      title: "Audience Engagement",
+      title: "Lightning Fast",
       description:
-        "Boost interaction with personalized video content tailored to your audience's preferences.",
+        "Get professional demo videos in under 2 minutes. No more waiting days for video production.",
       icon: "👥",
     },
   ];
@@ -207,8 +207,8 @@ const Hero1: React.FC = () => {
           }}
           style={{ y }}
         >
-          Automated Video Creation{" "}
-          <span className="text-[#6B46C1]">Powered by AI</span>
+          Convert product into your{" "}
+          <span className="text-[#6B46C1]">Best Salesperson</span>
         </motion.h1>
         <motion.p
           className="mt-4 max-sm:mt-8 text-gray-600 text-lg max-w-2xl mx-auto text-center translate-x-2 sm:translate-x-4 md:translate-x-6"
@@ -223,9 +223,8 @@ const Hero1: React.FC = () => {
             delay: 0.2,
           }}
         >
-          Our advanced AI technology analyzes your product, understands your
-          audience, and creates compelling demo videos that drive conversions
-          automatically.
+          Every company should be able to showcase its product in action, without needing a team of
+          developers, editors, designers, or salespeople.
         </motion.p>
 
         <motion.div

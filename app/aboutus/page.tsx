@@ -283,17 +283,19 @@ function TeamCarousel() {
               <Image
                 src={member.img}
                 alt={member.name}
-                width={isCenter ? 300 : 200}
+                width={isCenter ? 220 : 140}
                 height={isCenter ? 300 : 200}
                 style={{
                   maxWidth: "100%",
                   maxHeight: isCenter ? 300 : 200,
                   objectFit: "contain",
-                  transition: "filter 0.5s, transform 0.5s, max-width 0.5s, max-height 0.5s",
+                  transition:
+                    "filter 0.5s, transform 0.5s, max-width 0.5s, max-height 0.5s",
                   background: "transparent",
                   display: "block",
                   margin: "auto",
                 }}
+                unoptimized
               />
             </div>
             <div
@@ -738,7 +740,9 @@ export default function AboutUsPage() {
               fontStyle: "normal",
             }}
           >
-            “It&apos;s a statement of who we are and where we&apos;re headed. Building it right demands a team that is not only skilled but aligned in mindset, values, and commitment to excellence.”
+            “It&apos;s a statement of who we are and where we&apos;re headed. Building it
+            right demands a team that is not only skilled but aligned in
+            mindset, values, and commitment to excellence.”
           </div>
           <div
             style={{
@@ -753,8 +757,6 @@ export default function AboutUsPage() {
               width={48}
               height={48}
               style={{
-                width: 48,
-                height: 48,
                 borderRadius: "50%",
                 objectFit: "cover",
                 marginBottom: 8,
@@ -769,36 +771,6 @@ export default function AboutUsPage() {
           </div>
         </div>
         {/* Contact Details Section */}
-        <div
-          style={{
-            margin: "48px 0 0 0",
-            padding: "32px 40px",
-            background: "#f6f3ff",
-            borderRadius: 20,
-            boxShadow: "0 2px 16px #8C5BFF11",
-            maxWidth: 500,
-            width: "100%",
-            textAlign: "left",
-            fontSize: 20,
-            color: "#3c3450",
-            fontWeight: 500,
-            lineHeight: 1.6,
-          }}
-        >
-          <div style={{ marginBottom: 16 }}>
-            <span style={{ fontWeight: 700, color: "#8C5BFF" }}>Address:</span><br />
-            Plot no 4215, A.V. complex, Gadakana, Mancheshwar, 751017,<br />
-            Bhubaneswar, Odisha
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            <span style={{ fontWeight: 700, color: "#8C5BFF" }}>Email:</span><br />
-            <a href="mailto:hey@marvedge.com" style={{ color: "#3c3450", textDecoration: "underline" }}>hey@marvedge.com</a>
-          </div>
-          <div>
-            <span style={{ fontWeight: 700, color: "#8C5BFF" }}>Phone no.:</span><br />
-            <a href="tel:+917978141068" style={{ color: "#3c3450", textDecoration: "underline" }}>+91 7978141068</a>
-          </div>
-        </div>
       </section>
       {/* CONTACT FORM SECTION (Client Component) */}
       <ContactFormSection />
@@ -838,16 +810,19 @@ export default function AboutUsPage() {
             max-width: 98vw !important;
             gap: 12px !important;
           }
-          .about-section, .about-form {
+          .about-section,
+          .about-form {
             padding: 18px !important;
           }
-          .about-card, .team-card {
+          .about-card,
+          .team-card {
             min-width: 180px !important;
             width: 180px !important;
             height: 200px !important;
             font-size: 1rem !important;
           }
-          .about-form input, .about-form textarea {
+          .about-form input,
+          .about-form textarea {
             font-size: 1rem !important;
             padding: 10px !important;
           }
@@ -859,16 +834,19 @@ export default function AboutUsPage() {
             overflow-x: auto !important;
             padding-bottom: 8px !important;
           }
-          .about-section, .about-form {
+          .about-section,
+          .about-form {
             padding: 8px !important;
           }
-          .about-card, .team-card {
+          .about-card,
+          .team-card {
             min-width: 120px !important;
             width: 120px !important;
             height: 120px !important;
             font-size: 0.9rem !important;
           }
-          .about-form input, .about-form textarea {
+          .about-form input,
+          .about-form textarea {
             font-size: 0.9rem !important;
             padding: 6px !important;
           }

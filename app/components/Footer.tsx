@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
   return (
     <div
       ref={sectionRef}
-      className="w-full bg-[#2d2347] py-16 relative overflow-hidden"
+      className="w-full bg-[#2d2347] py-3 relative overflow-hidden"
     >
       <motion.div
         className="absolute top-20 left-1/4 w-32 h-32 bg-purple-900 rounded-full opacity-10"
@@ -103,7 +103,7 @@ const Footer: React.FC = () => {
         }}
       />
 
-      <section className="w-full max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:gap-24 relative z-10">
+      <section className="w-full max-w-7xl mx-auto py-2 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:gap-24 relative z-10">
         <motion.div
           className="flex flex-col w-full md:w-1/3 gap-8 mb-8 md:mb-0"
           initial={{ opacity: 0, y: 60 }}

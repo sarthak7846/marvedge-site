@@ -4,7 +4,7 @@ import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import React, { useState, useRef, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 function BlogCard({
   img,
@@ -137,46 +137,54 @@ export default function BlogPage() {
     summary: "",
     category: ["Finance"],
   });
-  const defaultBlogs = [
-    {
-      title: "The Importance of Blogging for Business",
-      img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
-      summary: "Discover how blogging can boost your business growth.",
-      category: ["Finance"],
-    },
-    {
-      title: "10 Tips for Successful Blogging",
-      img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
-      summary: "Learn how to create engaging blog content that drives traffic.",
-      category: ["Website"],
-    },
-    {
-      title: "How to Build a Personal Brand Online",
-      img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
-      summary:
-        "Tips and tricks for building your personal brand in the digital age.",
-      category: ["Marketing"],
-    },
-    {
-      title: "Case Study: SaaS Growth Hacking",
-      img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80",
-      summary: "A real-world example of how a SaaS company scaled rapidly.",
-      category: ["Case Study"],
-    },
-    {
-      title: "The Future of Product Design",
-      img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
-      summary: "Exploring trends and innovations in product design.",
-      category: ["Product"],
-    },
-    {
-      title: "Tech Stack Essentials for Startups",
-      img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-      summary: "Choosing the right technology stack for your startup success.",
-      category: ["Tech"],
-    },
-  ];
-  const [blogs, setBlogs] = useState<any[]>([]);
+  //   const defaultBlogs = [
+  //     {
+  //       title: "The Importance of Blogging for Business",
+  //       img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
+  //       summary: "Discover how blogging can boost your business growth.",
+  //       category: ["Finance"],
+  //     },
+  //     {
+  //       title: "10 Tips for Successful Blogging",
+  //       img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
+  //       summary: "Learn how to create engaging blog content that drives traffic.",
+  //       category: ["Website"],
+  //     },
+  //     {
+  //       title: "How to Build a Personal Brand Online",
+  //       img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
+  //       summary:
+  //         "Tips and tricks for building your personal brand in the digital age.",
+  //       category: ["Marketing"],
+  //     },
+  //     {
+  //       title: "Case Study: SaaS Growth Hacking",
+  //       img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80",
+  //       summary: "A real-world example of how a SaaS company scaled rapidly.",
+  //       category: ["Case Study"],
+  //     },
+  //     {
+  //       title: "The Future of Product Design",
+  //       img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
+  //       summary: "Exploring trends and innovations in product design.",
+  //       category: ["Product"],
+  //     },
+  //     {
+  //       title: "Tech Stack Essentials for Startups",
+  //       img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+  //       summary: "Choosing the right technology stack for your startup success.",
+  //       category: ["Tech"],
+  //     },
+  //   ];
+  type Blog = {
+    id: string;
+    title: string;
+    summary: string;
+    img: string;
+    category: string[];
+    createdAt?: string;
+  };
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
   const [contact, setContact] = useState({ name: "", email: "", message: "" });
@@ -687,7 +695,7 @@ export default function BlogPage() {
                 }}
               />
               {imagePreview && (
-                <img
+                <Image
                   src={imagePreview}
                   alt="Preview"
                   style={{
@@ -1311,7 +1319,7 @@ export default function BlogPage() {
                 "Can I integrate with existing systems?",
                 "What services do you offer?",
                 "How can I get started?",
-              ].map((q, i) => (
+              ].map((q) => (
                 <div
                   key={q}
                   style={{

@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
@@ -52,7 +51,7 @@ function ContactFormSection() {
             textAlign: "center",
           }}
         >
-          Let's bring your ideas to life, reach out and say hello.
+          Let&apos;s bring your ideas to life, reach out and say hello.
         </div>
         <div
           className="about-contact-names-row"
@@ -210,7 +209,7 @@ function TeamCarousel() {
   }, []);
 
   // Helper to get the correct index with wrap-around
-  const getIdx = (offset) =>
+  const getIdx = (offset: number) =>
     (centerIdx + offset + teamMembers.length) % teamMembers.length;
 
   return (
@@ -263,7 +262,7 @@ function TeamCarousel() {
               margin: 0,
             }}
           >
-            <img
+            <Image
               src={member.img}
               alt={member.name}
               style={{
@@ -362,7 +361,7 @@ export default function AboutUsPage() {
               lineHeight: 1.1,
             }}
           >
-            We're Building the future of
+            We&apos;re Building the future of
             <br />
             <span style={{ color: "#8C5BFF" }}>Digital Innovation</span>
           </h1>
@@ -728,7 +727,7 @@ export default function AboutUsPage() {
               alignItems: "center",
             }}
           >
-            <img
+            <Image
               src="https://randomuser.me/api/portraits/men/75.jpg"
               alt="Soumya Ranjan Nayak"
               style={{
@@ -786,16 +785,19 @@ export default function AboutUsPage() {
             max-width: 98vw !important;
             gap: 12px !important;
           }
-          .about-section, .about-form {
+          .about-section,
+          .about-form {
             padding: 18px !important;
           }
-          .about-card, .team-card {
+          .about-card,
+          .team-card {
             min-width: 180px !important;
             width: 180px !important;
             height: 200px !important;
             font-size: 1rem !important;
           }
-          .about-form input, .about-form textarea {
+          .about-form input,
+          .about-form textarea {
             font-size: 1rem !important;
             padding: 10px !important;
           }
@@ -807,16 +809,19 @@ export default function AboutUsPage() {
             overflow-x: auto !important;
             padding-bottom: 8px !important;
           }
-          .about-section, .about-form {
+          .about-section,
+          .about-form {
             padding: 8px !important;
           }
-          .about-card, .team-card {
+          .about-card,
+          .team-card {
             min-width: 120px !important;
             width: 120px !important;
             height: 120px !important;
             font-size: 0.9rem !important;
           }
-          .about-form input, .about-form textarea {
+          .about-form input,
+          .about-form textarea {
             font-size: 0.9rem !important;
             padding: 6px !important;
           }

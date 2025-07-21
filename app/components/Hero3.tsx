@@ -4,15 +4,26 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { easeOut } from "framer-motion";
 import Footer from "./Footer";
+import { useSearchParams } from "next/navigation";
 
 const Hero3: React.FC = () => {
+  const searchParams = useSearchParams();
+  const waitlistEmail = searchParams.get("waitlist");
   const [formData, setFormData] = useState({
-    email: "",
+    email: waitlistEmail || "",
     name: "",
     message: "",
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Scroll to form if waitlist param is present
+  React.useEffect(() => {
+    if (waitlistEmail) {
+      const el = document.getElementById("waitlist-form-section");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [waitlistEmail]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,7 +50,10 @@ const Hero3: React.FC = () => {
   };
   return (
     <>
-      <div className="w-full bg-gradient-to-br from-white via-purple-50 to-green-100 py-24 px-4 flex justify-center items-center">
+      <div
+        id="waitlist-form-section"
+        className="w-full bg-gradient-to-br from-white via-purple-50 to-green-100 py-24 px-4 flex justify-center items-center"
+      >
         <motion.div
           className="w-full max-w-xl text-center"
           initial={{ opacity: 0, y: 40 }}
@@ -59,7 +73,8 @@ const Hero3: React.FC = () => {
           </h2>
 
           <p className="text-gray-700 text-base md:text-lg mb-10">
-            Be among the first to access Marvedge and transform your videos to eye catchy demo
+            Be among the first to access Marvedge and transform your videos to
+            eye catchy demo
           </p>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
@@ -98,7 +113,9 @@ const Hero3: React.FC = () => {
               {loading ? "Sending..." : "Join the waitlist"}
             </motion.button>
             {success && (
-              <p className="text-green-600 font-medium">Message sent successfully!</p>
+              <p className="text-green-600 font-medium">
+                Message sent successfully!
+              </p>
             )}
           </form>
         </motion.div>

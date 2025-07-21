@@ -6,7 +6,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-x-hidden">
+    <html
+      lang="en"
+      className="overflow-x-hidden"
+      suppressHydrationWarning={true}
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{`

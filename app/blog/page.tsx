@@ -3,7 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 function BlogCard({
   img,
@@ -181,6 +182,21 @@ export default function BlogPage() {
   const [contact, setContact] = useState({ name: "", email: "", message: "" });
   const [showContact, setShowContact] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/blogs");
+        const data = await res.json();
+        setBlogs(data);
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -206,12 +222,41 @@ export default function BlogPage() {
     });
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBlogs([{ ...newBlog }, ...blogs]);
-    setShowCreate(false);
-    setNewBlog({ title: "", img: "", summary: "", category: ["Finance"] });
-    setImagePreview(""); // Clear preview on publish
+
+    if (!newBlog.title || !newBlog.summary || !imageFile) {
+      toast.error("Please fill all required fields and select an image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", newBlog.title);
+    formData.append("summary", newBlog.summary);
+    formData.append("category", newBlog.category.join(","));
+    formData.append("image", imageFile); // imageFile is File object
+
+    try {
+      const res = await fetch("/api/create-blog", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setBlogs([data, ...blogs]);
+        toast.success("Blog created successfully!");
+        setShowCreate(false);
+        setNewBlog({ title: "", img: "", summary: "", category: ["Finance"] });
+        setImagePreview("");
+      } else {
+        toast.error(data.error || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Blog creation error:", err);
+      toast.error("Failed to create blog");
+    }
   };
 
   const handleContactInput = (
@@ -219,18 +264,41 @@ export default function BlogPage() {
   ) => {
     setContact({ ...contact, [e.target.name]: e.target.value });
   };
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Message sent! (Demo only)");
-    setContact({ name: "", email: "", message: "" });
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contact),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.success || "Message sent!");
+        setContact({ name: "", email: "", message: "" });
+      } else {
+        alert(data.error || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Server error. Try again later.");
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setImagePreview(url);
-      setNewBlog({ ...newBlog, img: url });
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -487,8 +555,13 @@ export default function BlogPage() {
             >
               All <span style={{ color: "#8C5BFF" }}>Blog Posts</span>
             </h2>
-            <div className="blog-header-controls" style={{display:'flex',alignItems:'center',gap:12}}>
-              <span style={{ color: "#4c3c4c", fontSize: 22 }}>🔽 Sort By :</span>
+            <div
+              className="blog-header-controls"
+              style={{ display: "flex", alignItems: "center", gap: 12 }}
+            >
+              <span style={{ color: "#4c3c4c", fontSize: 22 }}>
+                🔽 Sort By :
+              </span>
               <select
                 style={{
                   background: "#8C5BFF",
@@ -521,8 +594,8 @@ export default function BlogPage() {
                   boxShadow: "0 2px 8px #8C5BFF22",
                   cursor: "pointer",
                   marginLeft: 8,
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   gap: 6,
                 }}
                 onClick={() => setShowCreate((v) => !v)}
@@ -604,13 +677,26 @@ export default function BlogPage() {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                style={{ width: "100%", padding: 8, fontSize: 16, borderRadius: 8, border: "1.5px solid #b9aaff", background: "#fff" }}
+                style={{
+                  width: "100%",
+                  padding: 8,
+                  fontSize: 16,
+                  borderRadius: 8,
+                  border: "1.5px solid #b9aaff",
+                  background: "#fff",
+                }}
               />
               {imagePreview && (
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  style={{ width: 180, height: 120, objectFit: "cover", borderRadius: 12, margin: "8px 0" }}
+                  style={{
+                    width: 180,
+                    height: 120,
+                    objectFit: "cover",
+                    borderRadius: 12,
+                    margin: "8px 0",
+                  }}
                 />
               )}
               {/* End image file input and preview */}
@@ -784,15 +870,17 @@ export default function BlogPage() {
               alignItems: "stretch",
             }}
           >
-            {blogs.concat(defaultBlogs).map((blog, idx) => (
-              <BlogCard
-                key={idx}
-                img={blog.img}
-                title={blog.title}
-                summary={blog.summary}
-                category={blog.category}
-              />
-            ))}
+            <div className="flex flex-wrap justify-center gap-6">
+              {blogs.map((blog, idx) => (
+                <BlogCard
+                  key={idx}
+                  img={blog.img}
+                  title={blog.title}
+                  summary={blog.summary}
+                  category={blog.category}
+                />
+              ))}
+            </div>
           </div>
           {/* Second row of blog cards */}
           <div

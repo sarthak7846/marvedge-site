@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Blog {
+  id        String   @id @default(uuid())
+  title     String
+  summary   String
+  img       String
+  category  String[] // Requires PostgreSQL or MongoDB
+  createdAt DateTime @default(now())
+}

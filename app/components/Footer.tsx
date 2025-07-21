@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
   useInView,
@@ -27,9 +28,9 @@ const socialIcons = [
 
 const LinkSection: React.FC<{
   title: string;
-  items: string[];
+  links: { label: string; href: string }[];
   index: number;
-}> = ({ title, items, index }) => (
+}> = ({ title, links, index }) => (
   <motion.div
     className="min-w-[100px]"
     initial={{ opacity: 0, y: 30 }}
@@ -40,10 +41,10 @@ const LinkSection: React.FC<{
       {title}
     </h3>
     <ul className="text-gray-300 space-y-1.5 text-sm sm:text-base">
-      {items.map((item, itemIndex) => (
+      {links.map((link, itemIndex) => (
         <motion.li
           key={itemIndex}
-          className="hover:text-[#a68cff] cursor-pointer transition-colors duration-200"
+          className="hover:text-[#a68cff] transition-colors duration-200"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{
@@ -53,7 +54,9 @@ const LinkSection: React.FC<{
           }}
           whileHover={{ x: 5, scale: 1.05 }}
         >
-          {item}
+          <Link href={link.href} className="cursor-pointer">
+            {link.label}
+          </Link>
         </motion.li>
       ))}
     </ul>
@@ -76,6 +79,7 @@ const Footer: React.FC = () => {
       ref={sectionRef}
       className="w-full bg-[#2d2347] py-3 relative overflow-hidden"
     >
+
       <motion.div
         className="absolute top-20 left-1/4 w-32 h-32 bg-purple-900 rounded-full opacity-10"
         animate={{
@@ -153,11 +157,14 @@ const Footer: React.FC = () => {
           transition={{ duration: 0.8, ease: easeOut, delay: 0.4 }}
           style={{ scale }}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-3  gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <LinkSection
               title="Company"
-              items={["About Us", "Blog"]}
               index={0}
+              links={[
+                { label: "About Us", href: "/aboutus" },
+                { label: "Blog", href: "/blog" },
+              ]}
             />
 
             <motion.div

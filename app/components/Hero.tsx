@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Image from "next/image";
 import {
   motion,
   useAnimationControls,
@@ -13,10 +14,10 @@ import Hero1 from "./Hero1";
 
 const Hero: React.FC = () => {
   const textSegments = [
-    { text: "Transform URL's into", color: "text-gray-700" },
-    { text: "COMPELLING DEMO", color: "text-[#7C55D7]" },
-    { text: "VIDEO", color: "text-[#7C55D7]" },
-    { text: "with AI", color: "text-gray-700" },
+    { text: "Turn CLICK's Into", color: "text-gray-700" },
+    { text: "Customers with", color: "text-[#7C55D7]" },
+    { text: "Interactive", color: "text-[#7C55D7]" },
+    { text: "Demos", color: "text-gray-700" },
   ];
 
   const controls = useAnimationControls();
@@ -78,7 +79,6 @@ const Hero: React.FC = () => {
       <section
         ref={ref}
         className="min-h-[90vh] pt-[140px] h-auto pb-16 bg-gradient-to-br from-white via-[#f9fef4] to-[#e6f0d6] relative overflow-hidden z-10"
-        style={{ zIndex: 10 }}
       >
         <motion.div
           className="absolute bottom-40 left-1/4 w-12 h-12 bg-green-200 rounded-full opacity-20"
@@ -94,9 +94,9 @@ const Hero: React.FC = () => {
           }}
         />
 
-        <div className="w-full px-2 sm:px-4 md:max-w-7xl md:mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-center relative">
+        <div className="w-full px-4 md:max-w-7xl md:mx-auto flex flex-col items-center text-center gap-10">
           <motion.div
-            className="pl-0 sm:pl-0 md:pl-0 mt-10 sm:mt-16"
+            className="max-w-3xl"
             variants={fadeInLeft}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -126,27 +126,32 @@ const Hero: React.FC = () => {
               ))}
             </motion.h1>
             <motion.p
-              className="mt-4 sm:mt-6 text-gray-600 text-base sm:text-lg max-w-[98%] sm:max-w-[95%]"
+              className="mt-4 sm:mt-6 text-gray-600 text-base sm:text-lg max-w-xl mx-auto"
               variants={fadeInUp}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
               transition={{ duration: 0.8, ease: easeOut, delay: 0.2 }}
             >
-              Stop spending hours creating product demos. Our AI analyzes your
-              product URL and automatically generates professional demo videos
-              that convert visitors into customers.
+              Marvedge turns your product into an instant demo - no editing, no
+              team, just click and convert.
             </motion.p>
           </motion.div>
 
           <motion.div
-            className="w-[90%] sm:w-[85%] md:w-[80%] h-[350px] sm:h-[400px] mt-4 sm:mt-8 rounded-[32px] bg-gradient-to-br from-[#c2b3f5] to-[#8a6ec5] flex items-center justify-center mx-auto lg:mr-[-32] md:ml-auto md:mr-0"
             variants={fadeInUp}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             transition={{ duration: 0.8, ease: easeOut }}
-            aria-label="Demo video placeholder"
+            aria-label="Demo image"
           >
-            <div className="w-[90%] sm:w-[85%] h-[85%] rounded-2xl bg-[#b199f2]" />
+            <Image
+              src="/images/landingpageimage.png"
+              alt="Hero demo visual"
+              width={880}
+              height={660}
+              className="object-cover w-full h-auto"
+              priority
+            />
           </motion.div>
         </div>
       </section>

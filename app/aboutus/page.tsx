@@ -169,7 +169,6 @@ function ContactFormSection() {
   );
 }
 
-// Carousel for Team Section
 const teamMembers = [
   {
     name: "Joyce Wallin",
@@ -177,14 +176,14 @@ const teamMembers = [
     img: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
-    name: "Alex Kim",
-    role: "Product Designer",
-    img: "https://randomuser.me/api/portraits/women/44.jpg",
+    name: "Ajit Kumar Shankhwar",
+    role: "Frontend Developer",
+    img: "/images/Ajit.jpg",
   },
   {
-    name: "Priya Singh",
-    role: "Frontend Developer",
-    img: "https://randomuser.me/api/portraits/women/68.jpg",
+    name: "Ashish Kumar Mishra",
+    role: "Full Stack Developer",
+    img: "/images/Ashish.jpg",
   },
   {
     name: "Carlos Rivera",
@@ -199,7 +198,7 @@ const teamMembers = [
 ];
 
 function TeamCarousel() {
-  const [centerIdx, setCenterIdx] = useState(2); // Start with the middle image
+  const [centerIdx, setCenterIdx] = useState(2); 
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -208,7 +207,6 @@ function TeamCarousel() {
     return () => clearInterval(interval);
   }, []);
 
-  // Helper to get the correct index with wrap-around
   const getIdx = (offset: number) =>
     (centerIdx + offset + teamMembers.length) % teamMembers.length;
 
@@ -220,9 +218,9 @@ function TeamCarousel() {
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-end",
-        gap: 56, // Increased gap between cards
+        gap: 56, 
         position: "relative",
-        height: 320,
+        height: 450,
         margin: "40px auto 24px auto",
         overflowX: "auto",
         padding: "0 0 24px 0",
@@ -244,7 +242,7 @@ function TeamCarousel() {
                 : offset === -1 || offset === 1
                 ? "scale(0.92) translateY(10px)"
                 : "scale(0.8) translateY(30px)",
-              filter: isCenter ? "none" : "blur(3px) grayscale(0.5)",
+              filter: isCenter ? "none" : "grayscale(0.5)",
               opacity: isCenter ? 1 : 0.7,
               boxShadow: isCenter
                 ? "0 8px 32px #8C5BFF33"
@@ -270,14 +268,13 @@ function TeamCarousel() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "transparent", // or "#f6f3ff" to match card
+                background: "transparent", 
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
                 padding: 0,
                 minHeight: 180,
                 maxHeight: 320,
                 overflow: "hidden",
-                // REMOVE marginTop!
               }}
             >
               <Image
@@ -289,6 +286,7 @@ function TeamCarousel() {
                   maxWidth: "100%",
                   maxHeight: isCenter ? 300 : 200,
                   objectFit: "contain",
+                  height: "auto", 
                   transition:
                     "filter 0.5s, transform 0.5s, max-width 0.5s, max-height 0.5s",
                   background: "transparent",
@@ -342,7 +340,6 @@ export default function AboutUsPage() {
       }}
     >
       <Navbar />
-      {/* HERO SECTION */}
       <section
         style={{
           width: "100%",
@@ -403,7 +400,6 @@ export default function AboutUsPage() {
             no developers, designers, or sales teams needed.
           </div>
         </div>
-        {/* Decorative horizontal lines */}
         <div
           style={{
             position: "absolute",
@@ -437,7 +433,6 @@ export default function AboutUsPage() {
           </svg>
         </div>
       </section>
-      {/* IMAGE SECTION */}
       <section
         style={{
           width: "100%",
@@ -467,7 +462,6 @@ export default function AboutUsPage() {
           />
         </div>
       </section>
-      {/* STORY, MISSION, VISION & TEAM INTRO SECTION */}
       <section
         style={{
           width: "100%",
@@ -478,7 +472,6 @@ export default function AboutUsPage() {
           padding: "32px 0 0 0",
         }}
       >
-        {/* Top: Story, Mission, Vision */}
         <div
           className="about-columns-row"
           style={{
@@ -492,7 +485,6 @@ export default function AboutUsPage() {
             marginBottom: 64,
           }}
         >
-          {/* Story */}
           <div style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
             <div
               style={{
@@ -546,7 +538,6 @@ export default function AboutUsPage() {
               writing a single line of code or a video editor.
             </div>
           </div>
-          {/* Divider */}
           <div
             style={{
               width: 2,
@@ -557,7 +548,6 @@ export default function AboutUsPage() {
               borderRadius: 1,
             }}
           />
-          {/* Mission */}
           <div style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
             <div
               style={{
@@ -602,7 +592,6 @@ export default function AboutUsPage() {
               self-serve experiences.
             </div>
           </div>
-          {/* Divider */}
           <div
             style={{
               width: 2,
@@ -613,7 +602,6 @@ export default function AboutUsPage() {
               borderRadius: 1,
             }}
           />
-          {/* Vision */}
           <div style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
             <div
               style={{
@@ -658,7 +646,6 @@ export default function AboutUsPage() {
             </div>
           </div>
         </div>
-        {/* Meet the Team Intro */}
         <div style={{ textAlign: "center", margin: "32px 0 0 0" }}>
           <div
             style={{
@@ -714,7 +701,6 @@ export default function AboutUsPage() {
           </a>
         </div>
       </section>
-      {/* TEAM CARDS & QUOTE SECTION */}
       <section
         style={{
           width: "100%",
@@ -725,9 +711,7 @@ export default function AboutUsPage() {
           margin: "120px 0 0 0",
         }}
       >
-        {/* Team Cards Row */}
         <TeamCarousel />
-        {/* Quote Section */}
         <div
           style={{ textAlign: "center", margin: "48px 0 0 0", maxWidth: 900 }}
         >
@@ -770,11 +754,8 @@ export default function AboutUsPage() {
             </div>
           </div>
         </div>
-        {/* Contact Details Section */}
       </section>
-      {/* CONTACT FORM SECTION (Client Component) */}
       <ContactFormSection />
-      {/* TEAM / MISSION SECTION */}
       <section
         style={{
           width: "100%",
@@ -795,14 +776,9 @@ export default function AboutUsPage() {
             justifyContent: "center",
           }}
         >
-          {/* Mission */}
-
-          {/* Team */}
         </div>
       </section>
-      {/* CONTACT / CTA SECTION */}
 
-      {/* FOOTER */}
       <Footer />
       <style jsx global>{`
         @media (max-width: 900px) {

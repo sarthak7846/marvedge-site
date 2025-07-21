@@ -17,7 +17,6 @@ const Hero3: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Scroll to form if waitlist param is present
   React.useEffect(() => {
     if (waitlistEmail) {
       const el = document.getElementById("waitlist-form-section");

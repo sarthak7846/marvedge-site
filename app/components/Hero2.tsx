@@ -61,7 +61,7 @@ const Hero2: React.FC = () => {
 
   const features = [
     {
-      label: "Automatic feature detection and highlighting",
+      label: "Reducing time-to-value for prospects and users",
       icon: <CheckCircle size={18} className="text-purple-600" />,
     },
     {
@@ -69,7 +69,7 @@ const Hero2: React.FC = () => {
       icon: <Video size={18} className="text-purple-600" />,
     },
     {
-      label: "Compelling call-to-action integration",
+      label: "Compelling video editing workspace integration",
       icon: <Headphones size={18} className="text-purple-600" />,
     },
   ];

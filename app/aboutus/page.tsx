@@ -91,7 +91,7 @@ const teamMembers = [
 ];
 
 function TeamCarousel() {
-  const [centerIdx, setCenterIdx] = useState(2); 
+  const [centerIdx, setCenterIdx] = useState(2);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -103,68 +103,62 @@ function TeamCarousel() {
   const getIdx = (offset: number) =>
     (centerIdx + offset + teamMembers.length) % teamMembers.length;
 
-  return (
-    <div
-      className="w-full max-w-[1500px] flex justify-center items-center flex-end gap-14 relative h-[450px] mx-auto mb-8 overflow-x-auto pb-8"
-    >
-      {[-2, -1, 0, 1, 2].map((offset: number) => {
-        const idx = getIdx(offset);
-        const member = teamMembers[idx];
-        const isCenter = offset === 0;
-        return (
-          <div
-            key={idx}
-            className={`relative z-${isCenter ? 2 : 1} transition-all duration-500 ${
-              isCenter
-                ? "scale-118 translate-y-[-18px]"
-                : offset === -1 || offset === 1
-                ? "scale-92 translate-y-[10px]"
-                : "scale-80 translate-y-[30px]"
-            } ${isCenter ? "" : "grayscale-50 opacity-70"} ${
-              isCenter ? "shadow-[0_8px_32px_#8C5BFF33]" : "shadow-[0_2px_8px_#e6e0fa33]"
-            } rounded-[24px] border-top-left-radius-[24px] border-top-right-radius-[24px] bg-[#f6f3ff] p-0 m-0 flex flex-col items-center justify-end min-w-[180px] max-w-[320px] w-auto`}
-          >
-            <div
-              className="w-full flex items-center justify-center bg-transparent rounded-top-left-24 rounded-top-right-24 p-0 min-h-[180px] max-h-[320px] overflow-hidden"
-            >
-              <Image
-                src={member.img}
-                alt={member.name}
-                width={isCenter ? 220 : 140}
-                height={isCenter ? 300 : 200}
-                className="max-w-full max-h-full object-contain h-auto transition-all duration-500 bg-transparent block mx-auto"
-                unoptimized
-              />
-            </div>
-            <div
-              className="bg-[#8C5BFF] text-white w-full text-center font-bold text-[22px] leading-tight tracking-wider pb-4 rounded-bottom-left-24 rounded-bottom-right-24"
-            >
-              {member.name}
-              <div
-                className="text-[#e6e0fa] text-[16px] font-normal mt-1"
-              >
-                {member.role}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+  // return (
+  //   <div
+  //     className="w-full max-w-[1500px] flex justify-center items-center flex-end gap-14 relative h-[450px] mx-auto mb-8 overflow-x-auto pb-8"
+  //   >
+  //     {[-2, -1, 0, 1, 2].map((offset: number) => {
+  //       const idx = getIdx(offset);
+  //       const member = teamMembers[idx];
+  //       const isCenter = offset === 0;
+  //       return (
+  //         <div
+  //           key={idx}
+  //           className={`relative z-${isCenter ? 2 : 1} transition-all duration-500 ${
+  //             isCenter
+  //               ? "scale-118 translate-y-[-18px]"
+  //               : offset === -1 || offset === 1
+  //               ? "scale-92 translate-y-[10px]"
+  //               : "scale-80 translate-y-[30px]"
+  //           } ${isCenter ? "" : "grayscale-50 opacity-70"} ${
+  //             isCenter ? "shadow-[0_8px_32px_#8C5BFF33]" : "shadow-[0_2px_8px_#e6e0fa33]"
+  //           } rounded-[24px] border-top-left-radius-[24px] border-top-right-radius-[24px] bg-[#f6f3ff] p-0 m-0 flex flex-col items-center justify-end min-w-[180px] max-w-[320px] w-auto`}
+  //         >
+  //           <div
+  //             className="w-full flex items-center justify-center bg-transparent rounded-top-left-24 rounded-top-right-24 p-0 min-h-[180px] max-h-[320px] overflow-hidden"
+  //           >
+  //             <Image
+  //               src={member.img}
+  //               alt={member.name}
+  //               width={isCenter ? 220 : 140}
+  //               height={isCenter ? 300 : 200}
+  //               className="max-w-full max-h-full object-contain h-auto transition-all duration-500 bg-transparent block mx-auto"
+  //               unoptimized
+  //             />
+  //           </div>
+  //           <div
+  //             className="bg-[#8C5BFF] text-white w-full text-center font-bold text-[22px] leading-tight tracking-wider pb-4 rounded-bottom-left-24 rounded-bottom-right-24"
+  //           >
+  //             {member.name}
+  //             <div
+  //               className="text-[#e6e0fa] text-[16px] font-normal mt-1"
+  //             >
+  //               {member.role}
+  //             </div>
+  //           </div>
+  //         </div>
+  //       );
+  //     })}
+  //   </div>
+  // );
 }
 
 export default function AboutUsPage() {
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-white to-f6f3ff flex flex-col"
-    >
+    <div className="min-h-screen bg-gradient-to-br from-white to-f6f3ff flex flex-col">
       <Navbar />
-      <section
-        className="w-full min-h-[48vh] flex flex-col items-center justify-center py-16 bg-[#FAFEF6] relative overflow-hidden"
-      >
-        <div
-          className="text-center w-full max-w-[1100px] mx-auto"
-        >
+      <section className="w-full min-h-[48vh] flex flex-col items-center justify-center py-16 bg-[#FAFEF6] relative overflow-hidden">
+        <div className="text-center w-full max-w-[1100px] mx-auto">
           <div className="text-[#a18fff] font-bold text-[24px] mb-3 mt-16">
             Discover Our Story
           </div>
@@ -180,9 +174,7 @@ export default function AboutUsPage() {
             no developers, designers, or sales teams needed.
           </div>
         </div>
-        <div
-          className="absolute left-0 right-0 bottom-16 h-0 z-0 pointer-events-none"
-        >
+        <div className="absolute left-0 right-0 bottom-16 h-0 z-0 pointer-events-none">
           <svg
             width="100%"
             height="32"
@@ -205,14 +197,10 @@ export default function AboutUsPage() {
           </svg>
         </div>
       </section>
-      <section
-        className="w-full flex justify-center items-center mb-12"
-      >
-        <div
-          className="w-[90%] max-w-[1300px] rounded-[24px] overflow-hidden shadow-[0_4px_32px_#e6e0fa33] bg-white"
-        >
+      <section className="w-full flex justify-center items-center mb-12">
+        <div className="w-[90%] max-w-[1300px] rounded-[24px] overflow-hidden shadow-[0_4px_32px_#e6e0fa33] bg-white">
           <Image
-            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80"
+            src="/images/image for landing page.png"
             alt="Team working on tablet"
             width={1300}
             height={650}
@@ -221,12 +209,8 @@ export default function AboutUsPage() {
           />
         </div>
       </section>
-      <section
-        className="w-full flex flex-col items-center justify-center py-12"
-      >
-        <div
-          className="about-columns-row flex flex-row justify-between items-start gap-12 mb-24"
-        >
+      <section className="w-full flex flex-col items-center justify-center py-12">
+        <div className="about-columns-row flex flex-row justify-between items-start gap-12 mb-24">
           <div className="flex-1 text-center px-8">
             <div className="text-[38px] font-bold text-[#3c3450] mb-2">
               Our <span className="text-[#8C5BFF]">Story</span>
@@ -237,23 +221,17 @@ export default function AboutUsPage() {
             <div className="text-[#6d6a7c] text-[20px] font-normal leading-relaxed">
               We are an early-stage, fast-growing SaaS startup helping
               product-led teams{" "}
-              <span
-                className="text-[#8C5BFF] font-semibold underline"
-              >
+              <span className="text-[#8C5BFF] font-semibold underline">
                 create interactive demos
               </span>{" "}
               for their tools,{" "}
-              <span
-                className="text-[#8C5BFF] font-semibold underline"
-              >
+              <span className="text-[#8C5BFF] font-semibold underline">
                 without
               </span>{" "}
               writing a single line of code or a video editor.
             </div>
           </div>
-          <div
-            className="w-1 bg-gradient-to-b from-[#ede7ff] to-[#8C5BFF22] h-full self-center opacity-40 rounded-full"
-          />
+          <div className="w-1 bg-gradient-to-b from-[#ede7ff] to-[#8C5BFF22] h-full self-center opacity-40 rounded-full" />
           <div className="flex-1 text-center px-8">
             <div className="text-[38px] font-bold text-[#3c3450] mb-2">
               Our <span className="text-[#8C5BFF]">Mission</span>
@@ -264,18 +242,14 @@ export default function AboutUsPage() {
             <div className="text-[#6d6a7c] text-[20px] font-normal leading-relaxed">
               To transform the way SaaS products are showcased and to equalize
               the access to{" "}
-              <span
-                className="text-[#8C5BFF] font-semibold underline"
-              >
+              <span className="text-[#8C5BFF] font-semibold underline">
                 high quality product
               </span>{" "}
               demos, empower early-stage startups to drive conversions through
               self-serve experiences.
             </div>
           </div>
-          <div
-            className="w-1 bg-gradient-to-b from-[#ede7ff] to-[#8C5BFF22] h-full self-center opacity-40 rounded-full"
-          />
+          <div className="w-1 bg-gradient-to-b from-[#ede7ff] to-[#8C5BFF22] h-full self-center opacity-40 rounded-full" />
           <div className="flex-1 text-center px-8">
             <div className="text-[38px] font-bold text-[#3c3450] mb-2">
               Our <span className="text-[#8C5BFF]">Vision</span>
@@ -285,9 +259,7 @@ export default function AboutUsPage() {
             </div>
             <div className="text-[#6d6a7c] text-[20px] font-normal leading-relaxed">
               To enable every SaaS product to be experienced in{" "}
-              <span
-                className="text-[#8C5BFF] font-semibold underline"
-              >
+              <span className="text-[#8C5BFF] font-semibold underline">
                 under 60 seconds
               </span>{" "}
               through interactive demos, without needing a team of developers,
@@ -298,9 +270,7 @@ export default function AboutUsPage() {
         <div className="text-center mt-12">
           <div className="text-[48px] font-extrabold text-[#3c3450] mb-3">
             Meet{" "}
-            <span
-              className="font-monospace font-bold text-[44px] align-middle text-[#8C5BFF] inline-block mx-1"
-            ></span>
+            <span className="font-monospace font-bold text-[44px] align-middle text-[#8C5BFF] inline-block mx-1"></span>
             our beautiful <span className="text-[#8C5BFF]">Team</span>
           </div>
           <div className="text-[#8C5BFF99] text-[22px] font-normal mb-12">
@@ -315,21 +285,14 @@ export default function AboutUsPage() {
           </a>
         </div>
       </section>
-      <section
-        className="w-full flex flex-col items-center justify-center mb-24"
-      >
-        <TeamCarousel />
-        <div
-          className="text-center mt-24 max-w-[900px]"
-        >
+      <section className="w-full flex flex-col items-center justify-center mb-24">
+        <div className="text-center mt-24 max-w-[900px]">
           <div className="text-[#6d6a7c] text-[24px] font-normal mb-12 font-normal">
-            “It&apos;s a statement of who we are and where we&apos;re headed. Building it
-            right demands a team that is not only skilled but aligned in
-            mindset, values, and commitment to excellence.”
+            “It&apos;s a statement of who we are and where we&apos;re headed.
+            Building it right demands a team that is not only skilled but
+            aligned in mindset, values, and commitment to excellence.”
           </div>
-          <div
-            className="flex flex-col items-center"
-          >
+          <div className="flex flex-col items-center">
             <Image
               src="https://randomuser.me/api/portraits/men/75.jpg"
               alt="Soumya Ranjan Nayak"
@@ -346,14 +309,12 @@ export default function AboutUsPage() {
           </div>
         </div>
       </section>
-      <ContactFormSection />
-      <section
-        className="w-full flex justify-center items-start mt-24"
-      >
-        <div
-          className="w-[90%] max-w-[1400px] flex flex-row gap-16 items-start justify-center"
-        >
-        </div>
+      {/* Reduce gap between CEO and contact form */}
+      <div className="mt-[-120]">
+        <ContactFormSection />
+      </div>
+      <section className="w-full flex justify-center items-start mt-24">
+        <div className="w-[90%] max-w-[1400px] flex flex-row gap-16 items-start justify-center"></div>
       </section>
 
       <Footer />

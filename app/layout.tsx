@@ -1,10 +1,14 @@
 "use client";
 import "./globals.css";
+import { usePathname } from 'next/navigation';
+import Navbar from './components/Navbar';
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const showNavbar = !pathname.startsWith('/auth/');
   return (
     <html lang="en" className="overflow-x-hidden">
       <head>
@@ -18,7 +22,10 @@ export default function RootLayout({
           }
         `}</style>
       </head>
-      <body className="overflow-x-hidden">{children}</body>
+      <body className="overflow-x-hidden">
+        {showNavbar && <Navbar />}
+        {children}
+      </body>
     </html>
   );
 }

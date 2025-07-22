@@ -4,6 +4,7 @@ import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import React, { useState, useRef } from "react";
+import { prisma } from "@/app/lib/prisma";
 
 function BlogCard({
   img,
@@ -18,33 +19,36 @@ function BlogCard({
 }) {
   return (
     <div
-      className="bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa55] w-[370px] min-h-[480px] p-6 flex flex-col mb-8"
+      className="bg-gradient-to-br from-white via-[#f6f3ff] to-[#ede7ff] border border-[#e6e0fa] rounded-[32px] shadow-2xl w-[420px] min-h-[480px] p-7 flex flex-col mb-8 transition-all duration-300 hover:shadow-[0_16px_48px_#b9aaff55] hover:border-[#b9aaff] hover:-translate-y-2 hover:scale-[1.035]"
     >
-      <Image
+      <img
         src={img}
         alt="Blog"
-        width={320}
-        height={180}
-        className="rounded-[20px] object-cover w-[320px] h-[180px] mb-[18px]"
+        className="rounded-[22px] object-cover w-full h-[180px] mb-5"
+        style={{ aspectRatio: '16/9' }}
       />
-      <div className="flex gap-2 flex-wrap mb-2.5">
+      <div className="flex items-center gap-2 text-[#9066F9] text-[16px] font-medium mb-2">
+        <svg className="w-5 h-5" fill="none" stroke="#9066F9" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#9066F9" strokeWidth="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" stroke="#9066F9" strokeWidth="2" /></svg>
+        <span>5 min read</span>
+      </div>
+      <h3 className="text-[24px] font-bold text-[#3d2966] leading-tight mb-1">{title}</h3>
+      <p className="text-[#6d6a7c] text-[17px] mb-4">{summary}</p>
+      <div className="flex gap-2 flex-wrap mb-4">
         {category.map((cat, i) => (
           <span
             key={i}
-            className="bg-[#e6e0fa] text-[#8C5BFF] rounded-[8px] px-[14px] py-1 font-semibold text-[15px] w-fit"
+            className="bg-[#e6e0fa] text-[#9066F9] rounded-[12px] px-4 py-1 font-semibold text-[15px] w-fit shadow-sm"
           >
             {cat}
           </span>
         ))}
       </div>
-      <h3 className="text-[26px] font-bold text-[#4c3c4c] m-0">{title}</h3>
-      <p className="text-[#6d6a7c] text-[18px] my-[10px] mb-4">{summary}</p>
-      <Link
+      <a
         href="#"
-        className="text-[#8C5BFF] font-semibold text-[18px] no-underline mt-auto flex items-center gap-1.5"
+        className="text-[#9066F9] font-semibold text-[18px] mt-auto flex items-center gap-1.5 hover:text-[#7a4eea] transition"
       >
-        Learn more <span className="text-[20px]">→</span>
-      </Link>
+        Learn more <span className="text-[20px]">&gt;</span>
+      </a>
     </div>
   );
 }
@@ -57,7 +61,9 @@ export default function BlogPage() {
     summary: "",
     category: ["Finance"],
   });
-  const [selectedCategory, setSelectedCategory] = useState<string>("All"); // State for selected filter category
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([
+    "All",
+  ]); // State for selected filter categories
   const [showAll, setShowAll] = useState(false); // State to control if all blogs are shown after Load More
   const defaultBlogs = [
     {
@@ -109,6 +115,9 @@ export default function BlogPage() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const blogListRef = React.useRef<HTMLDivElement>(null);
+  const [multiDropdownOpen, setMultiDropdownOpen] = useState(false);
+  const multiDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -152,17 +161,18 @@ export default function BlogPage() {
   };
 
   // Filter blogs based on selected category
-  const filteredBlogs =
-    selectedCategory === "All"
-      ? blogs.concat(defaultBlogs)
-      : blogs
-          .concat(defaultBlogs)
-          .filter((blog) => blog.category.includes(selectedCategory));
+  const filteredBlogs = selectedCategories.includes("All")
+    ? blogs.concat(defaultBlogs)
+    : blogs
+        .concat(defaultBlogs)
+        .filter((blog) =>
+          blog.category.some((cat) => selectedCategories.includes(cat))
+        );
 
   // Logic for sorted/featured blog and the rest
   let featuredBlog = null;
   let otherBlogs: typeof filteredBlogs = [];
-  if (selectedCategory !== "All" && filteredBlogs.length > 0) {
+  if (selectedCategories.length === 1 && selectedCategories[0] !== "All") {
     featuredBlog = filteredBlogs[0];
   }
   // All blogs (from all categories)
@@ -179,13 +189,31 @@ export default function BlogPage() {
 
   // Handler for sort change
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(e.target.value);
+    const selectedOptions = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    if (selectedOptions.includes("All")) {
+      setSelectedCategories(["All"]);
+    } else {
+      setSelectedCategories(selectedOptions);
+    }
     setShowAll(false); // Reset to only show featured blog
   };
 
   // Handler for Load More
   const handleLoadMore = () => {
     setShowAll(true);
+  };
+
+  // Handler for Discover Now button scroll
+  const handleDiscoverNow = () => {
+    if (blogListRef.current) {
+      blogListRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
   // Close dropdown on outside click
@@ -202,6 +230,43 @@ export default function BlogPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Close multiselect dropdown on outside click
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        multiDropdownRef.current &&
+        !multiDropdownRef.current.contains(event.target as Node)
+      ) {
+        setMultiDropdownOpen(false);
+      }
+    }
+    if (multiDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [multiDropdownOpen]);
+
+  // Handler for custom multiselect
+  const handleMultiSelect = (cat: string) => {
+    if (cat === "All") {
+      setSelectedCategories(["All"]);
+    } else {
+      let newSelected = selectedCategories.includes(cat)
+        ? selectedCategories.filter((c) => c !== cat)
+        : [...selectedCategories.filter((c) => c !== "All"), cat];
+      if (newSelected.length === 0) newSelected = ["All"];
+      setSelectedCategories(newSelected);
+    }
+    setShowAll(false);
+  };
+  const handleRemoveSelected = (cat: string) => {
+    if (cat === "All") return;
+    const newSelected = selectedCategories.filter((c) => c !== cat);
+    setSelectedCategories(newSelected.length ? newSelected : ["All"]);
+  };
+
   // Available categories for both filter and blog creation
   const categories = [
     "Finance",
@@ -213,15 +278,25 @@ export default function BlogPage() {
     "Other",
   ];
 
+  const allowedEmails = [
+    "somya@marvedge.com",
+    "hey@marvedge.com",
+    "sandip@marvedge.com",
+    "badal@marvedge.com",
+    "ashish@marvedge.com",
+    "kulkarniworkk@gmail.com",
+  ];
+  const userEmail =
+    typeof window !== "undefined"
+      ? localStorage.getItem("marvedgeUserEmail")
+      : null;
+  const canEdit = allowedEmails.includes(userEmail || "");
+
   return (
-    <div
-      className="min-h-screen bg-gradient-to-b from-white to-f6f3ff flex flex-col"
-    >
+    <div className="min-h-screen bg-gradient-to-b from-white to-f6f3ff flex flex-col">
       <Navbar />
       <div className="flex-grow flex flex-col">
-        <section
-          className="w-full min-h-[70vh] bg-[#FAFEF6] flex flex-col items-center py-12"
-        >
+        <section className="w-full min-h-[70vh] bg-[#FAFEF6] flex flex-col items-center py-12">
           <div className="text-center mb-10">
             <h1 className="text-[48px] font-bold text-[#313053] mb-4">
               Discover our <span className="text-[#8C5BFF]">Insights</span>
@@ -230,12 +305,8 @@ export default function BlogPage() {
               Stay updated with our latest uploaded blogs
             </p>
           </div>
-          <div
-            className="blog-feature-section flex flex-row items-stretch bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa55] max-w-[1100px] w-full min-h-[400px] mx-auto p-12 gap-16"
-          >
-            <div
-              className="flex-1 flex items-center justify-center"
-            >
+          <div className="blog-feature-section flex flex-row items-stretch bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa55] max-w-[1100px] w-full min-h-[400px] mx-auto p-12 gap-16">
+            <div className="flex-1 flex items-center justify-center">
               <Image
                 src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80"
                 alt="Blog visual"
@@ -244,12 +315,8 @@ export default function BlogPage() {
                 className="rounded-[32px] object-cover w-[350px] h-[350px]"
               />
             </div>
-            <div
-              className="flex-2 flex flex-col justify-center"
-            >
-              <span
-                className="bg-[#e6e0fa] text-[#8C5BFF] rounded-[8px] px-[16px] py-1 font-semibold text-[18px] w-fit mb-4"
-              >
+            <div className="flex-2 flex flex-col justify-center">
+              <span className="bg-[#e6e0fa] text-[#8C5BFF] rounded-[8px] px-[16px] py-1 font-semibold text-[18px] w-fit mb-4">
                 All
               </span>
               <h2 className="text-[36px] font-bold text-[#4c3c4c] mb-0">
@@ -258,14 +325,15 @@ export default function BlogPage() {
               <p className="text-[#6d6a7c] text-[20px] mt-4 mb-8">
                 Learn how to create engaging blog content that drives traffic
               </p>
-              <button
-                className="bg-[#8C5BFF] text-white border-none rounded-[10px] px-[40px] py-4 text-[20px] font-semibold cursor-pointer mb-12 shadow-[0_2px_8px_#8C5BFF22]"
-              >
-                Discover Now
-              </button>
-              <div
-                className="flex items-center gap-4 mt-auto"
-              >
+              <div className="flex justify-center w-full mb-12">
+                <button
+                  className="bg-[#8C5BFF] text-white border-none rounded-[10px] px-12 py-4 text-[20px] font-semibold cursor-pointer shadow-[0_2px_8px_#8C5BFF22] transition hover:bg-[#7a4eea]"
+                  onClick={handleDiscoverNow}
+                >
+                  Discover Now
+                </button>
+              </div>
+              <div className="flex items-center gap-4 mt-auto">
                 <Image
                   src="https://randomuser.me/api/portraits/women/44.jpg"
                   alt="Joya Mathur"
@@ -275,14 +343,10 @@ export default function BlogPage() {
                 />
                 <div className="text-[#4c3c4c] text-[16px]">
                   <div className="font-semibold">Joya Mathur</div>
-                  <div className="text-[#a1a1b5] text-[14px]">
-                    12 July 2025
-                  </div>
+                  <div className="text-[#a1a1b5] text-[14px]">12 July 2025</div>
                 </div>
                 <div className="flex-1" />
-                <span
-                  className="text-[#a1a1b5] flex items-center gap-1.5 text-[16px]"
-                >
+                <span className="text-[#a1a1b5] flex items-center gap-1.5 text-[16px]">
                   <svg
                     width="20"
                     height="20"
@@ -304,41 +368,86 @@ export default function BlogPage() {
           </div>
         </section>
         <section
+          ref={blogListRef}
           className="w-full bg-gradient-to-b from-white to-f6f3ff flex flex-col items-center py-24"
         >
-          <div
-            className="blog-header-row flex justify-between items-center mb-12"
-          >
-            <h2 className="text-[48px] font-bold text-[#313053] mb-0">
+          <div className="blog-header-row flex flex-row justify-between items-center mb-12 w-full max-w-[1400px] mx-auto px-4">
+            <h2 className="text-[48px] font-bold text-[#313053] mb-0 text-left">
               All <span className="text-[#8C5BFF]">Blog Posts</span>
             </h2>
-            <div
-              className="blog-header-controls flex items-center gap-3"
-            >
-              <span className="text-[#4c3c4c] text-[22px]">
-                🔽 Sort By :
-              </span>
-              <select
-                className="bg-[#8C5BFF] text-white border-none rounded-[12px] font-semibold text-[20px] px-[32px] py-3 shadow-[0_2px_8px_#8C5BFF22] outline-none cursor-pointer min-w-[180px]"
-                value={selectedCategory}
-                onChange={handleSortChange}
-              >
-                <option value="All">All</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-              <button
-                className="bg-[#8C5BFF] text-white border-none rounded-[12px] font-semibold text-[20px] px-[32px] py-3 shadow-[0_2px_8px_#8C5BFF22] cursor-pointer flex items-center gap-1.5"
-                onClick={() => setShowCreate((v) => !v)}
-              >
-                ➕ Create New Blog
-              </button>
+            <div className="blog-header-controls flex flex-row items-center gap-6 ml-auto">
+              <span className="text-[#4c3c4c] text-[22px]">Sort By :</span>
+              {/* Custom Multiselect Dropdown */}
+              <div className="relative min-w-[180px]" ref={multiDropdownRef}>
+                <button
+                  type="button"
+                  className="bg-[#9066F9] text-white border-none rounded-[14px] font-semibold text-[20px] px-8 py-3 shadow-[0_2px_8px_#9066F955] outline-none cursor-pointer flex justify-between items-center min-w-[180px] w-full transition hover:bg-[#7a4eea] focus:ring-2 focus:ring-[#b9aaff]"
+                  onClick={() => setMultiDropdownOpen((v) => !v)}
+                >
+                  <span className="truncate text-white text-[18px] font-semibold text-left">
+                    {selectedCategories[0] === "All"
+                      ? "All"
+                      : selectedCategories.join(", ")}
+                  </span>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${multiDropdownOpen ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {multiDropdownOpen && (
+                  <div className="absolute left-0 top-14 w-full bg-white border border-[#b9aaff] rounded-[12px] shadow-[0_4px_24px_#e6e0fa33] z-20 p-2 flex flex-col gap-1 animate-fade-in">
+                    <div
+                      className="flex items-center gap-2 px-3 py-2 rounded cursor-pointer hover:bg-[#f6f3ff]"
+                      onClick={() => handleMultiSelect("All")}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories[0] === "All"}
+                        readOnly
+                        className="accent-[#8C5BFF] w-4 h-4"
+                      />
+                      <span className="text-[#8C5BFF] font-semibold">All</span>
+                    </div>
+                    {categories.map((cat) => (
+                      <div
+                        key={cat}
+                        className="flex items-center gap-2 px-3 py-2 rounded cursor-pointer hover:bg-[#f6f3ff]"
+                        onClick={() => handleMultiSelect(cat)}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedCategories.includes(cat)}
+                          readOnly
+                          className="accent-[#8C5BFF] w-4 h-4"
+                        />
+                        <span className="text-[#4c3c4c] font-medium">
+                          {cat}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {canEdit && (
+                <button
+                  className="bg-[#8C5BFF] text-white border-none rounded-[12px] font-semibold text-[20px] px-[32px] py-3 shadow-[0_2px_8px_#8C5BFF22] cursor-pointer flex items-center gap-1.5"
+                  onClick={() => setShowCreate((v) => !v)}
+                >
+                  Create New Blog
+                </button>
+              )}
             </div>
           </div>
-          {showCreate && (
+          {canEdit && showCreate && (
             <form
               onSubmit={handleCreate}
               className="w-full max-w-md mx-auto mb-12 bg-[#f6f3ff] rounded-[24px] shadow-[0_4px_24px_#e6e0fa33] p-12 flex flex-col gap-6 items-center relative"
@@ -363,15 +472,21 @@ export default function BlogPage() {
                 className="w-full px-6 py-3 text-[18px] rounded-[8px] border border-[#b9aaff] bg-[#f6f3ff]"
               />
               <input
+                id="blog-image-upload"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="w-full px-6 py-3 text-[18px] rounded-[8px] border border-[#b9aaff] bg-[#f6f3ff] text-[#313053] box-border"
+                className="hidden"
               />
+              <label
+                htmlFor="blog-image-upload"
+                className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-[#f6f3ff] text-[#8C5BFF] border border-[#b9aaff] rounded-[8px] font-semibold text-[18px] cursor-pointer hover:bg-[#ede7ff] transition mb-2 shadow-sm"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="#8C5BFF" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                {imagePreview ? 'Change Image' : 'Upload Image'}
+              </label>
               {imagePreview && (
-                <div
-                  className="w-full h-48 bg-white rounded-[12px] flex items-center justify-center border border-[#b9aaff] mt-2"
-                >
+                <div className="w-full h-48 bg-white rounded-[12px] flex items-center justify-center border border-[#b9aaff] mt-2">
                   <Image
                     src={imagePreview}
                     alt="Preview"
@@ -409,15 +524,9 @@ export default function BlogPage() {
                   </span>
                 ))}
                 <span className="flex-1" />
-                <span
-                  className="text-[#b9aaff] text-[18px] mr-1"
-                >
-                  ▼
-                </span>
+                <span className="text-[#b9aaff] text-[18px] mr-1">▼</span>
                 {showCategoryDropdown && (
-                  <div
-                    className="absolute left-0 top-12 w-full bg-[#f6f3ff] border border-[#b9aaff] rounded-[8px] shadow-[0_4px_24px_#e6e0fa33] z-10 p-3 flex flex-col gap-1"
-                  >
+                  <div className="absolute left-0 top-12 w-full bg-[#f6f3ff] border border-[#b9aaff] rounded-[8px] shadow-[0_4px_24px_#e6e0fa33] z-10 p-3 flex flex-col gap-1">
                     {categories.map((cat) => (
                       <div
                         key={cat}
@@ -429,9 +538,7 @@ export default function BlogPage() {
                       >
                         {cat}
                         {newBlog.category.includes(cat) && (
-                          <span className="ml-2 font-bold">
-                            ✓
-                          </span>
+                          <span className="ml-2 font-bold">✓</span>
                         )}
                       </div>
                     ))}
@@ -457,51 +564,45 @@ export default function BlogPage() {
           )}
           <div
             className="w-full max-w-[1400px] grid gap-12 justify-items-center items-stretch"
-            style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))' }}
+            style={{
+              gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+            }}
           >
             {/* If a sort is selected, show the featured blog at the top, then all blogs below after Load More */}
-            {selectedCategory !== "All" && featuredBlog && (
+            {filteredBlogs.map((blog, idx) => (
               <BlogCard
-                key={"featured"}
-                img={featuredBlog.img}
-                title={featuredBlog.title}
-                summary={featuredBlog.summary}
-                category={featuredBlog.category}
+                key={idx}
+                img={blog.img}
+                title={blog.title}
+                summary={blog.summary}
+                category={blog.category}
               />
-            )}
-            {(selectedCategory === "All" || showAll) &&
-              allOtherBlogs.map((blog, idx) => (
-                <BlogCard
-                  key={idx}
-                  img={blog.img}
-                  title={blog.title}
-                  summary={blog.summary}
-                  category={blog.category}
-                />
-              ))}
+            ))}
           </div>
-          <div
-            className="w-full flex justify-center mt-6"
-          >
+          <div className="w-full flex justify-center mt-6">
             <button
               className="bg-[#8C5BFF] text-white border-none rounded-[16px] font-semibold text-[24px] px-[80px] py-[18px] shadow-[0_2px_8px_#8C5BFF22] cursor-pointer flex items-center gap-3 transition-background"
               onClick={handleLoadMore}
             >
-              Load More{" "}
-              <span
-                className="text-[28px] inline-block translate-y-[2px]"
+              Load More
+              <svg
+                className="w-7 h-7 ml-2 -mt-0.5"
+                fill="none"
+                stroke="white"
+                strokeWidth="2.5"
+                viewBox="0 0 24 24"
               >
-                ↗
-              </span>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7 17L17 7M7 7h10v10"
+                />
+              </svg>
             </button>
           </div>
         </section>
-        <section
-          className="faq-section-container flex justify-center items-start mt-24"
-        >
-          <div
-            className="w-full max-w-[1400px] flex flex-row gap-24 items-start justify-center"
-          >
+        <section className="faq-section-container flex justify-center items-start mt-24">
+          <div className="w-full max-w-[1400px] flex flex-row gap-24 items-start justify-center">
             <div className="flex-1 min-w-[340px]">
               <h2 className="text-[48px] font-bold text-[#313053] mb-0">
                 Frequently Asked{" "}
@@ -512,39 +613,27 @@ export default function BlogPage() {
                 development service
               </p>
               <div className="mt-16">
-                <div
-                  className="text-[#a1a1b5] font-bold text-[22px] mb-3"
-                >
+                <div className="text-[#a1a1b5] font-bold text-[22px] mb-3">
                   Company Contact
                 </div>
-                <div
-                  className="text-[#313053] text-[18px] mb-2"
-                >
+                <div className="text-[#313053] text-[18px] mb-2">
                   Address: Plot no 4215, A.V. complex, Gadakana, Mancheshwar,
                   751017, Bhubaneswar, Odisha
                 </div>
-                <div
-                  className="text-[#313053] text-[18px] mb-2"
-                >
+                <div className="text-[#313053] text-[18px] mb-2">
                   Email: hey@marvedge.com
                 </div>
-                <div
-                  className="text-[#313053] text-[18px] mb-2"
-                >
+                <div className="text-[#313053] text-[18px] mb-2">
                   Phone: +91 7978141068
                 </div>
               </div>
             </div>
             <div className="flex-2 min-w-[400px]">
-              <div
-                className="bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa33] p-12"
-              >
+              <div className="bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa33] p-12">
                 <div className="font-bold text-[26px] mb-8">
                   What is no-code?
                 </div>
-                <div
-                  className="text-[#6d6a7c] font-normal text-[22px]"
-                >
+                <div className="text-[#6d6a7c] font-normal text-[22px]">
                   No-code is a development method that allows people to build
                   apps or websites without coding, using visual tools and
                   drag-and-drop interfaces.

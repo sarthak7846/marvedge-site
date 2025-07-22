@@ -18,111 +18,32 @@ function BlogCard({
 }) {
   return (
     <div
-      style={{
-        background: "#f6f3ff",
-        borderRadius: 32,
-        boxShadow: "0 4px 32px #e6e0fa55",
-        width: 370,
-        minHeight: 480,
-        padding: 24,
-        display: "flex",
-        flexDirection: "column",
-        marginBottom: 32,
-      }}
+      className="bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa55] w-[370px] min-h-[480px] p-6 flex flex-col mb-8"
     >
       <Image
         src={img}
         alt="Blog"
         width={320}
         height={180}
-        style={{
-          borderRadius: 20,
-          objectFit: "cover",
-          width: 320,
-          height: 180,
-          marginBottom: 18,
-        }}
+        className="rounded-[20px] object-cover w-[320px] h-[180px] mb-[18px]"
       />
-      <div
-        style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}
-      >
+      <div className="flex gap-2 flex-wrap mb-2.5">
         {category.map((cat, i) => (
           <span
             key={i}
-            style={{
-              background: "#e6e0fa",
-              color: "#8C5BFF",
-              borderRadius: 8,
-              padding: "4px 14px",
-              fontWeight: 600,
-              fontSize: 15,
-              width: "fit-content",
-            }}
+            className="bg-[#e6e0fa] text-[#8C5BFF] rounded-[8px] px-[14px] py-1 font-semibold text-[15px] w-fit"
           >
             {cat}
           </span>
         ))}
       </div>
-      <h3
-        style={{ fontSize: 26, fontWeight: 700, color: "#4c3c4c", margin: 0 }}
-      >
-        {title}
-      </h3>
-      <p style={{ color: "#6d6a7c", fontSize: 18, margin: "10px 0 16px 0" }}>
-        {summary}
-      </p>
-      <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
-        <span
-          style={{
-            background: "#e6e0fa",
-            color: "#8C5BFF",
-            borderRadius: 8,
-            padding: "4px 14px",
-            fontWeight: 600,
-            fontSize: 15,
-          }}
-        >
-          Finance
-        </span>
-        <span
-          style={{
-            background: "#e6e0fa",
-            color: "#8C5BFF",
-            borderRadius: 8,
-            padding: "4px 14px",
-            fontWeight: 600,
-            fontSize: 15,
-          }}
-        >
-          Website
-        </span>
-        <span
-          style={{
-            background: "#e6e0fa",
-            color: "#8C5BFF",
-            borderRadius: 8,
-            padding: "4px 14px",
-            fontWeight: 600,
-            fontSize: 15,
-          }}
-        >
-          Case Study
-        </span>
-      </div>
+      <h3 className="text-[26px] font-bold text-[#4c3c4c] m-0">{title}</h3>
+      <p className="text-[#6d6a7c] text-[18px] my-[10px] mb-4">{summary}</p>
       <Link
         href="#"
-        style={{
-          color: "#8C5BFF",
-          fontWeight: 600,
-          fontSize: 18,
-          textDecoration: "none",
-          marginTop: "auto",
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-        }}
+        className="text-[#8C5BFF] font-semibold text-[18px] no-underline mt-auto flex items-center gap-1.5"
       >
-        Learn more <span style={{ fontSize: 20 }}>→</span>
+        Learn more <span className="text-[20px]">→</span>
       </Link>
     </div>
   );
@@ -136,6 +57,8 @@ export default function BlogPage() {
     summary: "",
     category: ["Finance"],
   });
+  const [selectedCategory, setSelectedCategory] = useState<string>("All"); // State for selected filter category
+  const [showAll, setShowAll] = useState(false); // State to control if all blogs are shown after Load More
   const defaultBlogs = [
     {
       title: "The Importance of Blogging for Business",
@@ -228,6 +151,43 @@ export default function BlogPage() {
     }
   };
 
+  // Filter blogs based on selected category
+  const filteredBlogs =
+    selectedCategory === "All"
+      ? blogs.concat(defaultBlogs)
+      : blogs
+          .concat(defaultBlogs)
+          .filter((blog) => blog.category.includes(selectedCategory));
+
+  // Logic for sorted/featured blog and the rest
+  let featuredBlog = null;
+  let otherBlogs: typeof filteredBlogs = [];
+  if (selectedCategory !== "All" && filteredBlogs.length > 0) {
+    featuredBlog = filteredBlogs[0];
+  }
+  // All blogs (from all categories)
+  const allBlogs = blogs.concat(defaultBlogs);
+  // Remove the featured blog from allBlogs (if present)
+  const allOtherBlogs = featuredBlog
+    ? allBlogs.filter(
+        (blog) =>
+          blog.title !== featuredBlog.title ||
+          blog.summary !== featuredBlog.summary ||
+          blog.img !== featuredBlog.img
+      )
+    : allBlogs;
+
+  // Handler for sort change
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.target.value);
+    setShowAll(false); // Reset to only show featured blog
+  };
+
+  // Handler for Load More
+  const handleLoadMore = () => {
+    setShowAll(true);
+  };
+
   // Close dropdown on outside click
   React.useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -242,190 +202,86 @@ export default function BlogPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Available categories for both filter and blog creation
+  const categories = [
+    "Finance",
+    "Website",
+    "Case Study",
+    "Marketing",
+    "Product",
+    "Tech",
+    "Other",
+  ];
+
   return (
     <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #fff 60%, #f6f3ff 100%)",
-        display: "flex",
-        flexDirection: "column",
-      }}
+      className="min-h-screen bg-gradient-to-b from-white to-f6f3ff flex flex-col"
     >
       <Navbar />
-      {/* Main content wrapper */}
-      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        {/* --- HERO SECTION --- */}
+      <div className="flex-grow flex flex-col">
         <section
-          style={{
-            width: "100%",
-            minHeight: "70vh",
-            background: "#FAFEF6",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "48px 0 0 0",
-          }}
+          className="w-full min-h-[70vh] bg-[#FAFEF6] flex flex-col items-center py-12"
         >
-          <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <span
-              style={{
-                color: "#8C5BFF",
-                fontWeight: 600,
-                fontSize: 20,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-              }}
-            ></span>
-            <h1
-              style={{
-                fontSize: 48,
-                fontWeight: 800,
-                color: "#313053",
-                margin: "48px 0",
-              }}
-            >
-              Discover our <span style={{ color: "#8C5BFF" }}>Insights</span>
+          <div className="text-center mb-10">
+            <h1 className="text-[48px] font-bold text-[#313053] mb-4">
+              Discover our <span className="text-[#8C5BFF]">Insights</span>
             </h1>
-            <p
-              style={{
-                color: "#6d6a7c",
-                fontSize: 22,
-                fontWeight: 400,
-                marginTop: 8,
-              }}
-            >
+            <p className="text-[#6d6a7c] text-[22px] font-normal mt-2">
               Stay updated with our latest uploaded blogs
             </p>
           </div>
           <div
-            className="blog-feature-section"
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "stretch",
-              background: "#f6f3ff",
-              borderRadius: 32,
-              boxShadow: "0 4px 32px #e6e0fa55",
-              maxWidth: 1100,
-              width: "90%",
-              minHeight: 400,
-              margin: "0 auto",
-              padding: 32,
-              gap: 40,
-            }}
+            className="blog-feature-section flex flex-row items-stretch bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa55] max-w-[1100px] w-full min-h-[400px] mx-auto p-12 gap-16"
           >
-            {/* Blog image */}
             <div
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              className="flex-1 flex items-center justify-center"
             >
               <Image
                 src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80"
                 alt="Blog visual"
                 width={350}
                 height={350}
-                style={{
-                  borderRadius: 32,
-                  objectFit: "cover",
-                  width: 350,
-                  height: 350,
-                }}
+                className="rounded-[32px] object-cover w-[350px] h-[350px]"
               />
             </div>
-            {/* Blog content */}
             <div
-              style={{
-                flex: 2,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
+              className="flex-2 flex flex-col justify-center"
             >
               <span
-                style={{
-                  background: "#e6e0fa",
-                  color: "#8C5BFF",
-                  borderRadius: 8,
-                  padding: "4px 16px",
-                  fontWeight: 600,
-                  fontSize: 18,
-                  width: "fit-content",
-                  marginBottom: 16,
-                }}
+                className="bg-[#e6e0fa] text-[#8C5BFF] rounded-[8px] px-[16px] py-1 font-semibold text-[18px] w-fit mb-4"
               >
                 All
               </span>
-              <h2
-                style={{
-                  fontSize: 36,
-                  fontWeight: 700,
-                  color: "#4c3c4c",
-                  margin: 0,
-                }}
-              >
+              <h2 className="text-[36px] font-bold text-[#4c3c4c] mb-0">
                 10 Tips for Successful Blogging
               </h2>
-              <p
-                style={{
-                  color: "#6d6a7c",
-                  fontSize: 20,
-                  margin: "16px 0 32px 0",
-                }}
-              >
+              <p className="text-[#6d6a7c] text-[20px] mt-4 mb-8">
                 Learn how to create engaging blog content that drives traffic
               </p>
               <button
-                style={{
-                  background: "#8C5BFF",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "16px 40px",
-                  fontSize: 20,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  marginBottom: 32,
-                  boxShadow: "0 2px 8px #8C5BFF22",
-                }}
+                className="bg-[#8C5BFF] text-white border-none rounded-[10px] px-[40px] py-4 text-[20px] font-semibold cursor-pointer mb-12 shadow-[0_2px_8px_#8C5BFF22]"
               >
                 Discover Now
               </button>
               <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 16,
-                  marginTop: "auto",
-                }}
+                className="flex items-center gap-4 mt-auto"
               >
                 <Image
                   src="https://randomuser.me/api/portraits/women/44.jpg"
                   alt="Joya Mathur"
                   width={40}
                   height={40}
-                  style={{ borderRadius: "50%", objectFit: "cover" }}
+                  className="rounded-full object-cover"
                 />
-                <div style={{ color: "#4c3c4c", fontSize: 16 }}>
-                  <div style={{ fontWeight: 600 }}>Joya Mathur</div>
-                  <div style={{ fontSize: 14, color: "#a1a1b5" }}>
+                <div className="text-[#4c3c4c] text-[16px]">
+                  <div className="font-semibold">Joya Mathur</div>
+                  <div className="text-[#a1a1b5] text-[14px]">
                     12 July 2025
                   </div>
                 </div>
-                <div style={{ flex: 1 }} />
+                <div className="flex-1" />
                 <span
-                  style={{
-                    color: "#a1a1b5",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 16,
-                  }}
+                  className="text-[#a1a1b5] flex items-center gap-1.5 text-[16px]"
                 >
                   <svg
                     width="20"
@@ -447,81 +303,35 @@ export default function BlogPage() {
             </div>
           </div>
         </section>
-        {/* --- BLOG CARDS SECTION --- */}
         <section
-          style={{
-            width: "100%",
-            background: "linear-gradient(135deg, #fff 60%, #f6f3ff 100%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "32px 0 64px 0",
-          }}
+          className="w-full bg-gradient-to-b from-white to-f6f3ff flex flex-col items-center py-24"
         >
           <div
-            className="blog-header-row"
-            style={{
-              width: "90%",
-              maxWidth: 1400,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 32,
-            }}
+            className="blog-header-row flex justify-between items-center mb-12"
           >
-            <h2
-              style={{
-                fontSize: 48,
-                fontWeight: 800,
-                color: "#313053",
-                margin: 0,
-              }}
-            >
-              All <span style={{ color: "#8C5BFF" }}>Blog Posts</span>
+            <h2 className="text-[48px] font-bold text-[#313053] mb-0">
+              All <span className="text-[#8C5BFF]">Blog Posts</span>
             </h2>
             <div
-              className="blog-header-controls"
-              style={{ display: "flex", alignItems: "center", gap: 12 }}
+              className="blog-header-controls flex items-center gap-3"
             >
-              <span style={{ color: "#4c3c4c", fontSize: 22 }}>
+              <span className="text-[#4c3c4c] text-[22px]">
                 🔽 Sort By :
               </span>
               <select
-                style={{
-                  background: "#8C5BFF",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 12,
-                  fontSize: 20,
-                  fontWeight: 500,
-                  padding: "12px 32px",
-                  boxShadow: "0 2px 8px #8C5BFF22",
-                  outline: "none",
-                  cursor: "pointer",
-                  minWidth: 180,
-                }}
-                defaultValue="Category One"
+                className="bg-[#8C5BFF] text-white border-none rounded-[12px] font-semibold text-[20px] px-[32px] py-3 shadow-[0_2px_8px_#8C5BFF22] outline-none cursor-pointer min-w-[180px]"
+                value={selectedCategory}
+                onChange={handleSortChange}
               >
-                <option>Category One</option>
-                <option>Category Two</option>
-                <option>Category Three</option>
+                <option value="All">All</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
               </select>
               <button
-                style={{
-                  background: "#8C5BFF",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 12,
-                  fontSize: 20,
-                  fontWeight: 600,
-                  padding: "12px 32px",
-                  boxShadow: "0 2px 8px #8C5BFF22",
-                  cursor: "pointer",
-                  marginLeft: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                }}
+                className="bg-[#8C5BFF] text-white border-none rounded-[12px] font-semibold text-[20px] px-[32px] py-3 shadow-[0_2px_8px_#8C5BFF22] cursor-pointer flex items-center gap-1.5"
                 onClick={() => setShowCreate((v) => !v)}
               >
                 ➕ Create New Blog
@@ -531,54 +341,17 @@ export default function BlogPage() {
           {showCreate && (
             <form
               onSubmit={handleCreate}
-              style={{
-                width: "100%",
-                maxWidth: 600,
-                margin: "0 auto 32px auto",
-                background: "#f6f3ff",
-                borderRadius: 24,
-                boxShadow: "0 4px 24px #e6e0fa33",
-                padding: 32,
-                display: "flex",
-                flexDirection: "column",
-                gap: 18,
-                alignItems: "center",
-                position: "relative",
-              }}
+              className="w-full max-w-md mx-auto mb-12 bg-[#f6f3ff] rounded-[24px] shadow-[0_4px_24px_#e6e0fa33] p-12 flex flex-col gap-6 items-center relative"
             >
               <button
                 type="button"
                 onClick={() => setShowCreate(false)}
-                style={{
-                  position: "absolute",
-                  top: 18,
-                  right: 18,
-                  background: "#ede7ff",
-                  border: "1.5px solid #b9aaff",
-                  borderRadius: "50%",
-                  width: 36,
-                  height: 36,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 22,
-                  color: "#8C5BFF",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 8px #e6e0fa22",
-                  zIndex: 2,
-                }}
+                className="absolute top-4 right-4 bg-[#ede7ff] border border-[#b9aaff] rounded-full w-10 h-10 flex items-center justify-center font-semibold text-[22px] text-[#8C5BFF] cursor-pointer shadow-[0_2px_8px_#e6e0fa22] z-10"
                 aria-label="Close"
               >
                 ×
               </button>
-              <h3
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  color: "#8C5BFF",
-                  margin: 0,
-                }}
-              >
+              <h3 className="text-[28px] font-bold text-[#8C5BFF] mb-0">
                 Create New Blog
               </h3>
               <input
@@ -587,99 +360,41 @@ export default function BlogPage() {
                 onChange={handleInput}
                 placeholder="Blog Title"
                 required
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  fontSize: 18,
-                  borderRadius: 8,
-                  border: "1.5px solid #b9aaff",
-                  background: "#f6f3ff",
-                }}
+                className="w-full px-6 py-3 text-[18px] rounded-[8px] border border-[#b9aaff] bg-[#f6f3ff]"
               />
-              {/* Image file input and preview */}
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  fontSize: 18,
-                  borderRadius: 8,
-                  border: "1.5px solid #b9aaff",
-                  background: "#f6f3ff",
-                  color: "#313053",
-                  boxSizing: "border-box",
-                }}
+                className="w-full px-6 py-3 text-[18px] rounded-[8px] border border-[#b9aaff] bg-[#f6f3ff] text-[#313053] box-border"
               />
               {imagePreview && (
                 <div
-                  style={{
-                    width: "100%",
-                    height: 240,
-                    background: "#fff",
-                    borderRadius: 12,
-                    margin: "8px 0",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1.5px solid #b9aaff",
-                  }}
+                  className="w-full h-48 bg-white rounded-[12px] flex items-center justify-center border border-[#b9aaff] mt-2"
                 >
                   <Image
                     src={imagePreview}
                     alt="Preview"
                     width={240}
                     height={240}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      borderRadius: 10,
-                      background: "transparent",
-                    }}
+                    className="w-full h-full object-contain rounded-[10px] bg-transparent"
                   />
                 </div>
               )}
-              {/* End image file input and preview */}
-              {/* Custom Multi-Select Category UI */}
               <div
                 ref={categoryRef}
-                style={{
-                  width: "100%",
-                  position: "relative",
-                  background: "#f6f3ff",
-                  border: "1.5px solid #b9aaff",
-                  borderRadius: 8,
-                  minHeight: 48,
-                  padding: "6px 12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                  gap: 6,
-                }}
+                className="w-full relative bg-[#f6f3ff] border border-[#b9aaff] rounded-[8px] min-h-[48px] px-6 py-3 cursor-pointer flex flex-wrap items-center gap-1.5"
                 onClick={() => setShowCategoryDropdown((v) => !v)}
               >
                 {newBlog.category.length === 0 && (
-                  <span style={{ color: "#b9aaff", fontSize: 18 }}>
+                  <span className="text-[#b9aaff] text-[18px]">
                     Select categories...
                   </span>
                 )}
                 {newBlog.category.map((cat) => (
                   <span
                     key={cat}
-                    style={{
-                      background: "#e6e0fa",
-                      color: "#8C5BFF",
-                      borderRadius: 8,
-                      padding: "4px 10px 4px 14px",
-                      fontWeight: 600,
-                      fontSize: 15,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
+                    className="bg-[#e6e0fa] text-[#8C5BFF] rounded-[8px] px-[10px] py-1 font-semibold text-[15px] flex items-center gap-1"
                   >
                     {cat}
                     <span
@@ -687,76 +402,34 @@ export default function BlogPage() {
                         e.stopPropagation();
                         handleRemoveCategory(cat);
                       }}
-                      style={{
-                        marginLeft: 4,
-                        color: "#8C5BFF",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        fontSize: 16,
-                        padding: "0 2px",
-                      }}
+                      className="ml-1 text-[#8C5BFF] font-bold cursor-pointer text-[16px] px-1"
                     >
                       ×
                     </span>
                   </span>
                 ))}
-                <span style={{ flex: 1 }} />
+                <span className="flex-1" />
                 <span
-                  style={{ color: "#b9aaff", fontSize: 18, marginRight: 4 }}
+                  className="text-[#b9aaff] text-[18px] mr-1"
                 >
                   ▼
                 </span>
                 {showCategoryDropdown && (
                   <div
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: 48,
-                      width: "100%",
-                      background: "#f6f3ff",
-                      border: "1.5px solid #b9aaff",
-                      borderRadius: 8,
-                      boxShadow: "0 4px 24px #e6e0fa33",
-                      zIndex: 10,
-                      padding: 6,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 4,
-                    }}
+                    className="absolute left-0 top-12 w-full bg-[#f6f3ff] border border-[#b9aaff] rounded-[8px] shadow-[0_4px_24px_#e6e0fa33] z-10 p-3 flex flex-col gap-1"
                   >
-                    {[
-                      "Finance",
-                      "Website",
-                      "Case Study",
-                      "Marketing",
-                      "Product",
-                      "Tech",
-                      "Other",
-                    ].map((cat) => (
+                    {categories.map((cat) => (
                       <div
                         key={cat}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCategorySelect(cat);
                         }}
-                        style={{
-                          padding: "8px 12px",
-                          borderRadius: 6,
-                          background: newBlog.category.includes(cat)
-                            ? "#8C5BFF22"
-                            : "transparent",
-                          color: newBlog.category.includes(cat)
-                            ? "#8C5BFF"
-                            : "#313053",
-                          fontWeight: 500,
-                          fontSize: 17,
-                          cursor: "pointer",
-                          transition: "background 0.2s",
-                        }}
+                        className="px-4 py-2 rounded-3 text-[#313053] font-semibold text-[17px] cursor-pointer transition-background"
                       >
                         {cat}
                         {newBlog.category.includes(cat) && (
-                          <span style={{ marginLeft: 8, fontWeight: 700 }}>
+                          <span className="ml-2 font-bold">
                             ✓
                           </span>
                         )}
@@ -765,7 +438,6 @@ export default function BlogPage() {
                   </div>
                 )}
               </div>
-              {/* End Custom Multi-Select Category UI */}
               <textarea
                 name="summary"
                 value={newBlog.summary}
@@ -773,351 +445,117 @@ export default function BlogPage() {
                 placeholder="Short Summary"
                 required
                 rows={3}
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  fontSize: 18,
-                  borderRadius: 8,
-                  border: "1.5px solid #b9aaff",
-                  background: "#f6f3ff",
-                }}
+                className="w-full px-6 py-3 text-[18px] rounded-[8px] border border-[#b9aaff] bg-[#f6f3ff]"
               />
               <button
                 type="submit"
-                style={{
-                  background: "#8C5BFF",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 10,
-                  fontSize: 20,
-                  fontWeight: 600,
-                  padding: "12px 40px",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 8px #8C5BFF22",
-                  marginTop: 8,
-                }}
+                className="bg-[#8C5BFF] text-white border-none rounded-[10px] font-semibold text-[20px] px-[40px] py-3 cursor-pointer shadow-[0_2px_8px_#8C5BFF22] mt-2"
               >
                 Publish Blog
               </button>
             </form>
           )}
           <div
-            style={{
-              width: "90%",
-              maxWidth: 1400,
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-              gap: 32,
-              justifyItems: "center",
-              alignItems: "stretch",
-            }}
+            className="w-full max-w-[1400px] grid gap-12 justify-items-center items-stretch"
+            style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))' }}
           >
-            {blogs.concat(defaultBlogs).map((blog, idx) => (
+            {/* If a sort is selected, show the featured blog at the top, then all blogs below after Load More */}
+            {selectedCategory !== "All" && featuredBlog && (
               <BlogCard
-                key={idx}
-                img={blog.img}
-                title={blog.title}
-                summary={blog.summary}
-                category={blog.category}
+                key={"featured"}
+                img={featuredBlog.img}
+                title={featuredBlog.title}
+                summary={featuredBlog.summary}
+                category={featuredBlog.category}
               />
-            ))}
+            )}
+            {(selectedCategory === "All" || showAll) &&
+              allOtherBlogs.map((blog, idx) => (
+                <BlogCard
+                  key={idx}
+                  img={blog.img}
+                  title={blog.title}
+                  summary={blog.summary}
+                  category={blog.category}
+                />
+              ))}
           </div>
-          {/* Second row of blog cards */}
           <div
-            style={{
-              width: "90%",
-              maxWidth: 1400,
-              display: "flex",
-              gap: 32,
-              flexWrap: "wrap",
-              justifyContent: "flex-start",
-              marginTop: 0,
-            }}
-          >
-            {/* Blog cards are now rendered from blogs state above */}
-          </div>
-          {/* Load More Button */}
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              marginTop: 24,
-            }}
+            className="w-full flex justify-center mt-6"
           >
             <button
-              style={{
-                background: "#8C5BFF",
-                color: "#fff",
-                border: "none",
-                borderRadius: 16,
-                fontSize: 24,
-                fontWeight: 600,
-                padding: "18px 80px",
-                boxShadow: "0 2px 8px #8C5BFF22",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                transition: "background 0.2s",
-              }}
+              className="bg-[#8C5BFF] text-white border-none rounded-[16px] font-semibold text-[24px] px-[80px] py-[18px] shadow-[0_2px_8px_#8C5BFF22] cursor-pointer flex items-center gap-3 transition-background"
+              onClick={handleLoadMore}
             >
               Load More{" "}
               <span
-                style={{
-                  fontSize: 28,
-                  display: "inline-block",
-                  transform: "translateY(2px)",
-                }}
+                className="text-[28px] inline-block translate-y-[2px]"
               >
                 ↗
               </span>
             </button>
           </div>
         </section>
-        {/* --- NEWSLETTER SECTION --- */}
         <section
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            margin: "48px 0 0 0",
-          }}
+          className="faq-section-container flex justify-center items-start mt-24"
         >
           <div
-            style={{
-              width: "90%",
-              maxWidth: 1400,
-              background: "linear-gradient(135deg, #fff 60%, #f6f3ff 100%)",
-              borderRadius: 48,
-              boxShadow: "0 4px 32px #e6e0fa33",
-              padding: "64px 32px 48px 32px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
+            className="w-full max-w-[1400px] flex flex-row gap-24 items-start justify-center"
           >
-            <h2
-              style={{
-                fontSize: 56,
-                fontWeight: 800,
-                color: "#313053",
-                margin: 0,
-                textAlign: "center",
-              }}
-            >
-              Stay Updated{" "}
-              <span style={{ color: "#8C5BFF" }}>With Our Newsletter</span>
-            </h2>
-            <p
-              style={{
-                color: "#6d6a7c",
-                fontSize: 28,
-                fontWeight: 400,
-                margin: "32px 0 40px 0",
-                textAlign: "center",
-                maxWidth: 800,
-              }}
-            >
-              Subscribe to our newsletter for the latest updates and insights
-              <br />
-              on no-code / low code development.
-            </p>
-            <form
-              className="newsletter-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const email = (
-                  e.currentTarget.elements.namedItem(
-                    "newsletterEmail"
-                  ) as HTMLInputElement
-                )?.value;
-                if (email) {
-                  window.location.href = `/?waitlist=${encodeURIComponent(
-                    email
-                  )}#waitlist-form-section`;
-                }
-              }}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                gap: 24,
-                width: "100%",
-                maxWidth: 700,
-                marginBottom: 24,
-              }}
-            >
-              <input
-                name="newsletterEmail"
-                type="email"
-                placeholder="Enter Your Email"
-                required
-                style={{
-                  flex: 1,
-                  padding: "18px 24px",
-                  fontSize: 22,
-                  borderRadius: 12,
-                  border: "2px solid #e6e0fa",
-                  outline: "none",
-                  background: "#fff",
-                  color: "#313053",
-                  fontWeight: 500,
-                  transition: "border 0.2s",
-                }}
-              />
-              <button
-                type="submit"
-                style={{
-                  background: "#8C5BFF",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 12,
-                  fontSize: 24,
-                  fontWeight: 600,
-                  padding: "0 48px",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 8px #8C5BFF22",
-                  transition: "background 0.2s",
-                }}
-              >
-                Join Now
-              </button>
-            </form>
-            <div
-              style={{
-                color: "#8C5BFF",
-                fontSize: 18,
-                marginTop: 8,
-                textAlign: "center",
-              }}
-            >
-              By joining you Agree to our{" "}
-              <span style={{ textDecoration: "underline", cursor: "pointer" }}>
-                Terms and Conditions
-              </span>
-              .
-            </div>
-          </div>
-        </section>
-        {/* --- FAQ SECTION --- */}
-        <section
-          className="faq-section-container"
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            margin: "64px 0 0 0",
-          }}
-        >
-          <div
-            style={{
-              width: "90%",
-              maxWidth: 1400,
-              display: "flex",
-              flexDirection: "row",
-              gap: 64,
-              alignItems: "flex-start",
-              justifyContent: "center",
-            }}
-          >
-            {/* Left Side */}
-            <div style={{ flex: 1, minWidth: 340 }}>
-              <h2
-                style={{
-                  fontSize: 48,
-                  fontWeight: 800,
-                  color: "#313053",
-                  margin: 0,
-                }}
-              >
+            <div className="flex-1 min-w-[340px]">
+              <h2 className="text-[48px] font-bold text-[#313053] mb-0">
                 Frequently Asked{" "}
-                <span style={{ color: "#8C5BFF" }}>Questions</span>
+                <span className="text-[#8C5BFF]">Questions</span>
               </h2>
-              <p
-                style={{
-                  color: "#6d6a7c",
-                  fontSize: 24,
-                  fontWeight: 400,
-                  margin: "32px 0 0 0",
-                  maxWidth: 400,
-                }}
-              >
+              <p className="text-[#6d6a7c] text-[24px] font-normal mt-8 max-w-[400px]">
                 Find answers to common questions about our no code/ low code
                 development service
               </p>
-              <div style={{ marginTop: 40 }}>
+              <div className="mt-16">
                 <div
-                  style={{
-                    color: "#a1a1b5",
-                    fontWeight: 700,
-                    fontSize: 22,
-                    marginBottom: 12,
-                  }}
+                  className="text-[#a1a1b5] font-bold text-[22px] mb-3"
                 >
                   Company Contact
                 </div>
                 <div
-                  style={{ color: "#313053", fontSize: 18, marginBottom: 6 }}
+                  className="text-[#313053] text-[18px] mb-2"
                 >
                   Address: Plot no 4215, A.V. complex, Gadakana, Mancheshwar,
                   751017, Bhubaneswar, Odisha
                 </div>
                 <div
-                  style={{ color: "#313053", fontSize: 18, marginBottom: 6 }}
+                  className="text-[#313053] text-[18px] mb-2"
                 >
                   Email: hey@marvedge.com
                 </div>
                 <div
-                  style={{ color: "#313053", fontSize: 18, marginBottom: 6 }}
+                  className="text-[#313053] text-[18px] mb-2"
                 >
                   Phone: +91 7978141068
                 </div>
               </div>
             </div>
-            {/* Right Side (Accordion) */}
-            <div style={{ flex: 2, minWidth: 400 }}>
-              {/* Expanded answer */}
+            <div className="flex-2 min-w-[400px]">
               <div
-                style={{
-                  background: "#f6f3ff",
-                  borderRadius: 32,
-                  boxShadow: "0 4px 32px #e6e0fa33",
-                  padding: "32px 40px 32px 40px",
-                  marginBottom: 24,
-                  fontSize: 22,
-                  color: "#4c3c4c",
-                  fontWeight: 500,
-                  position: "relative",
-                }}
+                className="bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa33] p-12"
               >
-                <div style={{ fontWeight: 700, fontSize: 26, marginBottom: 8 }}>
+                <div className="font-bold text-[26px] mb-8">
                   What is no-code?
                 </div>
                 <div
-                  style={{ color: "#6d6a7c", fontWeight: 400, fontSize: 22 }}
+                  className="text-[#6d6a7c] font-normal text-[22px]"
                 >
                   No-code is a development method that allows people to build
                   apps or websites without coding, using visual tools and
                   drag-and-drop interfaces.
                 </div>
                 <span
-                  style={{
-                    position: "absolute",
-                    top: 24,
-                    right: 32,
-                    fontSize: 36,
-                    color: "#c2b6e6",
-                    cursor: "pointer",
-                    userSelect: "none",
-                  }}
+                  className="absolute top-6 right-12 text-[36px] text-[#c2b6e6] cursor-pointer user-select-none"
                   aria-label="Close"
                 >
                   ×
                 </span>
               </div>
-              {/* Collapsed questions */}
               {[
                 "What are the benefits?",
                 "Can I integrate with existing systems?",
@@ -1126,47 +564,37 @@ export default function BlogPage() {
               ].map((q) => (
                 <div
                   key={q}
-                  style={{
-                    background: "#fff",
-                    border: "2px solid #e6e0fa",
-                    borderRadius: 18,
-                    padding: "28px 40px",
-                    marginBottom: 18,
-                    fontSize: 22,
-                    color: "#6d6a7c",
-                    fontWeight: 500,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    cursor: "pointer",
-                    transition: "background 0.2s, border 0.2s",
-                  }}
+                  className="bg-white border border-[#e6e0fa] rounded-[18px] p-7 mb-6"
                 >
-                  {q}
-                  <span
-                    style={{ fontSize: 32, color: "#c2b6e6", marginLeft: 16 }}
-                  >
+                  <div className="text-[#6d6a7c] font-semibold text-[22px] mb-3">
+                    {q}
+                  </div>
+                  <div className="text-[#6d6a7c] font-semibold text-[22px]">
                     +
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
       </div>
-      {/* --- FOOTER --- */}
       <Footer />
       <style jsx global>{`
         @media (max-width: 900px) {
           .blog-card-grid {
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+            grid-template-columns: repeat(
+              auto-fit,
+              minmax(260px, 1fr)
+            ) !important;
             gap: 20px !important;
           }
-          .blog-form, .newsletter-form {
+          .blog-form,
+          .newsletter-form {
             max-width: 98vw !important;
             padding: 18px !important;
           }
-          .blog-section, .newsletter-section {
+          .blog-section,
+          .newsletter-section {
             padding: 24px 0 !important;
           }
           .blog-card {
@@ -1180,11 +608,13 @@ export default function BlogPage() {
             grid-template-columns: 1fr !important;
             gap: 12px !important;
           }
-          .blog-form, .newsletter-form {
+          .blog-form,
+          .newsletter-form {
             max-width: 100vw !important;
             padding: 8px !important;
           }
-          .blog-section, .newsletter-section {
+          .blog-section,
+          .newsletter-section {
             padding: 12px 0 !important;
           }
           .blog-card {
@@ -1211,10 +641,12 @@ export default function BlogPage() {
           .blog-card > *:not(img) {
             order: 1 !important;
           }
-          .blog-card h3, .blog-card p {
+          .blog-card h3,
+          .blog-card p {
             font-size: 1rem !important;
           }
-          .blog-btn, .newsletter-btn {
+          .blog-btn,
+          .newsletter-btn {
             width: 100% !important;
             font-size: 1rem !important;
             padding: 12px 0 !important;
@@ -1235,167 +667,166 @@ export default function BlogPage() {
             border-radius: 18px !important;
             margin-bottom: 12px !important;
           }
-          @media (max-width: 600px) {
-            .blog-feature-section {
-              flex-direction: column !important;
-              gap: 12px !important;
-              padding: 12px 4px !important;
-              min-height: unset !important;
-              max-width: 98vw !important;
-              width: 98vw !important;
-              border-radius: 18px !important;
-              box-shadow: 0 2px 12px #e6e0fa33 !important;
-              margin: 0 auto 18px auto !important;
-            }
-            .blog-feature-section > div:first-child img {
-              width: 100% !important;
-              height: auto !important;
-              aspect-ratio: 16/9 !important;
-              border-radius: 14px !important;
-              margin-bottom: 10px !important;
-              object-fit: cover !important;
-              display: block !important;
-              max-width: 100% !important;
-            }
-            .blog-feature-section h2 {
-              font-size: 1.2rem !important;
-              margin: 8px 0 4px 0 !important;
-            }
-            .blog-feature-section p, .blog-feature-section span, .blog-feature-section button {
-              font-size: 1rem !important;
-            }
-            .blog-feature-section button {
-              width: 100% !important;
-              font-size: 1rem !important;
-              padding: 12px 0 !important;
-              margin: 10px 0 !important;
-            }
-            .blog-header-row {
-              flex-direction: column !important;
-              align-items: flex-start !important;
-              gap: 10px !important;
-              width: 98vw !important;
-              max-width: 98vw !important;
-              margin-bottom: 18px !important;
-            }
-            .blog-header-row > * {
-              width: 100% !important;
-              margin: 0 0 6px 0 !important;
-              font-size: 1.1rem !important;
-            }
-            .blog-header-row h2 {
-              font-size: 1.4rem !important;
-              margin-bottom: 2px !important;
-            }
-            .blog-header-row select, .blog-header-row button {
-              font-size: 1rem !important;
-              padding: 10px 0 !important;
-              width: 100% !important;
-              margin-bottom: 6px !important;
-            }
+          .blog-feature-section {
+            flex-direction: column !important;
+            gap: 12px !important;
+            padding: 12px 4px !important;
+            min-height: unset !important;
+            max-width: 98vw !important;
+            width: 98vw !important;
+            border-radius: 18px !important;
+            box-shadow: 0 2px 12px #e6e0fa33 !important;
+            margin: 0 auto 18px auto !important;
           }
-          @media (max-width: 600px) {
-            .blog-header-row {
-              flex-direction: column !important;
-              align-items: flex-start !important;
-              gap: 18px !important;
-              width: 98vw !important;
-              max-width: 98vw !important;
-              margin-bottom: 18px !important;
-              border-bottom: 1.5px solid #ece6ff;
-              padding-bottom: 10px;
-            }
-            .blog-header-row h2 {
-              font-size: 2rem !important;
-              margin-bottom: 6px !important;
-              color: #7C55D7 !important;
-              letter-spacing: 0.5px;
-              text-shadow: 0 2px 8px #e6e0fa33;
-            }
-            .blog-header-controls {
-              width: 100% !important;
-              background: #f6f3ff !important;
-              border-radius: 16px !important;
-              box-shadow: 0 2px 8px #e6e0fa22 !important;
-              padding: 12px 10px !important;
-              display: flex !important;
-              flex-direction: column !important;
-              align-items: stretch !important;
-              gap: 10px !important;
-              margin-top: 4px !important;
-            }
-            .blog-header-controls > * {
-              width: 100% !important;
-              font-size: 1.1rem !important;
-              margin: 0 0 4px 0 !important;
-            }
-            .blog-header-controls select, .blog-header-controls button {
-              font-size: 1rem !important;
-              padding: 12px 0 !important;
-              width: 100% !important;
-              margin-bottom: 4px !important;
-            }
+          .blog-feature-section > div:first-child img {
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 16/9 !important;
+            border-radius: 14px !important;
+            margin-bottom: 10px !important;
+            object-fit: cover !important;
+            display: block !important;
+            max-width: 100% !important;
           }
-          @media (max-width: 600px) {
-            .newsletter-outer {
-              flex-direction: column !important;
-              width: 100vw !important;
-              margin: 18px 0 0 0 !important;
-              align-items: stretch !important;
-              justify-content: flex-start !important;
-              padding: 0 !important;
-            }
-            .newsletter-outer > * {
-              width: 100% !important;
-              max-width: 100vw !important;
-            }
-            .newsletter-form {
-              flex-direction: column !important;
-              gap: 10px !important;
-              width: 100% !important;
-              max-width: 100vw !important;
-              align-items: stretch !important;
-            }
-            .newsletter-form input, .newsletter-form button {
-              width: 100% !important;
-              font-size: 1rem !important;
-              padding: 14px 0 !important;
-              margin: 0 !important;
-              box-sizing: border-box !important;
-            }
+          .blog-feature-section h2 {
+            font-size: 1.2rem !important;
+            margin: 8px 0 4px 0 !important;
           }
-          @media (max-width: 927px) {
-            .faq-section-container {
-              flex-direction: column !important;
-              gap: 0 !important;
-              width: 98vw !important;
-              max-width: 98vw !important;
-              align-items: stretch !important;
-              justify-content: flex-start !important;
-              margin: 0 auto !important;
-              padding: 0 !important;
-            }
-            .faq-section-container > *,
-            .faq-section-container > * > *,
-            .faq-section-container > * > * > * {
-              width: 100% !important;
-              min-width: 0 !important;
-              max-width: 100vw !important;
-              box-sizing: border-box !important;
-              float: none !important;
-              display: block !important;
-            }
-            .faq-section-container > *:first-child {
-              margin-bottom: 24px !important;
-            }
-            .faq-section-container .faq-card, .faq-section-container .faq-item {
-              margin-bottom: 10px !important;
-              border-radius: 14px !important;
-              font-size: 1rem !important;
-              padding: 16px 10px !important;
-            }
+          .blog-feature-section p,
+          .blog-feature-section span,
+          .blog-feature-section button {
+            font-size: 1rem !important;
           }
-        `}</style>
+          .blog-feature-section button {
+            width: 100% !important;
+            font-size: 1rem !important;
+            padding: 12px 0 !important;
+            margin: 10px 0 !important;
+          }
+          .blog-header-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            width: 98vw !important;
+            max-width: 98vw !important;
+            margin-bottom: 18px !important;
+          }
+          .blog-header-row > * {
+            width: 100% !important;
+            margin: 0 0 6px 0 !important;
+            font-size: 1.1rem !important;
+          }
+          .blog-header-row h2 {
+            font-size: 1.4rem !important;
+            margin-bottom: 2px !important;
+          }
+          .blog-header-row select,
+          .blog-header-row button {
+            font-size: 1rem !important;
+            padding: 10px 0 !important;
+            width: 100% !important;
+            margin-bottom: 6px !important;
+          }
+          .blog-header-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 18px !important;
+            width: 98vw !important;
+            max-width: 98vw !important;
+            margin-bottom: 18px !important;
+            border-bottom: 1.5px solid #ece6ff;
+            padding-bottom: 10px;
+          }
+          .blog-header-row h2 {
+            font-size: 2rem !important;
+            margin-bottom: 6px !important;
+            color: #7c55d7 !important;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 8px #e6e0fa33;
+          }
+          .blog-header-controls {
+            width: 100% !important;
+            background: #f6f3ff !important;
+            border-radius: 16px !important;
+            box-shadow: 0 2px 8px #e6e0fa22 !important;
+            padding: 12px 10px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+            margin-top: 4px !important;
+          }
+          .blog-header-controls > * {
+            width: 100% !important;
+            font-size: 1.1rem !important;
+            margin: 0 0 4px 0 !important;
+          }
+          .blog-header-controls select,
+          .blog-header-controls button {
+            font-size: 1rem !important;
+            padding: 12px 0 !important;
+            width: 100% !important;
+            margin-bottom: 4px !important;
+          }
+          .newsletter-outer {
+            flex-direction: column !important;
+            width: 100vw !important;
+            margin: 18px 0 0 0 !important;
+            align-items: stretch !important;
+            justifycontent: flex-start !important;
+            padding: 0 !important;
+          }
+          .newsletter-outer > * {
+            width: 100% !important;
+            max-width: 100vw !important;
+          }
+          .newsletter-form {
+            flex-direction: column !important;
+            gap: 10px !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            align-items: stretch !important;
+          }
+          .newsletter-form input,
+          .newsletter-form button {
+            width: 100% !important;
+            font-size: 1rem !important;
+            padding: 14px 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+          }
+          .faq-section-container {
+            flex-direction: column !important;
+            gap: 0 !important;
+            width: 98vw !important;
+            max-width: 98vw !important;
+            align-items: stretch !important;
+            justify-content: flex-start !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+          }
+          .faq-section-container > *,
+          .faq-section-container > * > *,
+          .faq-section-container > * > * > * {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100vw !important;
+            box-sizing: border-box !important;
+            float: none !important;
+            display: block !important;
+          }
+          .faq-section-container > *:first-child {
+            margin-bottom: 24px !important;
+          }
+          .faq-section-container .faq-card,
+          .faq-section-container .faq-item {
+            margin-bottom: 10px !important;
+            border-radius: 14px !important;
+            font-size: 1rem !important;
+            padding: 16px 10px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -3,8 +3,47 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import toast from "react-hot-toast";
 
 function ContactFormSection() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        toast.success("Message sent!");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        toast.error("Failed to send message");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <section
       id="contact"
@@ -29,7 +68,7 @@ function ContactFormSection() {
           flexDirection: "column",
           alignItems: "center",
         }}
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={handleSubmit}
       >
         <div
           style={{
@@ -61,6 +100,10 @@ function ContactFormSection() {
             type="text"
             placeholder="Enter your First Name"
             required
+            value={formData.firstName}
+            onChange={(e) =>
+              setFormData({ ...formData, firstName: e.target.value })
+            }
             style={{
               flex: 1,
               padding: "16px 18px",
@@ -78,6 +121,10 @@ function ContactFormSection() {
             type="text"
             placeholder="Enter your Last Name"
             required
+            value={formData.lastName}
+            onChange={(e) =>
+              setFormData({ ...formData, lastName: e.target.value })
+            }
             style={{
               flex: 1,
               padding: "16px 18px",
@@ -96,6 +143,8 @@ function ContactFormSection() {
           type="email"
           placeholder="Enter your email"
           required
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           style={{
             width: "100%",
             padding: "16px 18px",
@@ -112,6 +161,8 @@ function ContactFormSection() {
         />
         <input
           type="tel"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           placeholder="Enter your phone number"
           style={{
             width: "100%",
@@ -129,6 +180,10 @@ function ContactFormSection() {
         />
         <textarea
           placeholder="Enter your message"
+          value={formData.message}
+          onChange={(e) =>
+            setFormData({ ...formData, message: e.target.value })
+          }
           required
           rows={4}
           style={{
@@ -198,7 +253,7 @@ const teamMembers = [
 ];
 
 function TeamCarousel() {
-  const [centerIdx, setCenterIdx] = useState(2); 
+  const [centerIdx, setCenterIdx] = useState(2);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -218,7 +273,7 @@ function TeamCarousel() {
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-end",
-        gap: 56, 
+        gap: 56,
         position: "relative",
         height: 450,
         margin: "40px auto 24px auto",
@@ -268,7 +323,7 @@ function TeamCarousel() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "transparent", 
+                background: "transparent",
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
                 padding: 0,
@@ -286,7 +341,7 @@ function TeamCarousel() {
                   maxWidth: "100%",
                   maxHeight: isCenter ? 300 : 200,
                   objectFit: "contain",
-                  height: "auto", 
+                  height: "auto",
                   transition:
                     "filter 0.5s, transform 0.5s, max-width 0.5s, max-height 0.5s",
                   background: "transparent",
@@ -724,9 +779,9 @@ export default function AboutUsPage() {
               fontStyle: "normal",
             }}
           >
-            “It&apos;s a statement of who we are and where we&apos;re headed. Building it
-            right demands a team that is not only skilled but aligned in
-            mindset, values, and commitment to excellence.”
+            “It&apos;s a statement of who we are and where we&apos;re headed.
+            Building it right demands a team that is not only skilled but
+            aligned in mindset, values, and commitment to excellence.”
           </div>
           <div
             style={{
@@ -775,8 +830,7 @@ export default function AboutUsPage() {
             alignItems: "flex-start",
             justifyContent: "center",
           }}
-        >
-        </div>
+        ></div>
       </section>
 
       <Footer />

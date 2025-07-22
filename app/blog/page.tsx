@@ -3,18 +3,27 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { toast } from "react-hot-toast";
+import router from "next/router";
+import { useRouter } from "next/navigation";
 
 function BlogCard({
+  id,
   img,
   title,
   summary,
   category,
+  onEdit,
+  onDelete,
 }: {
+  id: string;
   img: string;
   title: string;
   summary: string;
   category: string[];
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   return (
     <div
@@ -46,7 +55,7 @@ function BlogCard({
       <div
         style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}
       >
-        {category.map((cat, i) => (
+        {category?.map((cat, i) => (
           <span
             key={i}
             style={{
@@ -109,21 +118,64 @@ function BlogCard({
           Case Study
         </span>
       </div>
-      <Link
-        href="#"
+
+      {/* Learn More + Buttons */}
+      <div
         style={{
-          color: "#8C5BFF",
-          fontWeight: 600,
-          fontSize: 18,
-          textDecoration: "none",
-          marginTop: "auto",
           display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
-          gap: 6,
+          marginTop: "auto",
         }}
       >
-        Learn more <span style={{ fontSize: 20 }}>→</span>
-      </Link>
+        <Link
+          href="#"
+          style={{
+            color: "#8C5BFF",
+            fontWeight: 600,
+            fontSize: 18,
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          Learn more <span style={{ fontSize: 20 }}>→</span>
+        </Link>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            style={{
+              background: "#e6e0fa",
+              color: "#8C5BFF",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: 14,
+            }}
+            onClick={onEdit}
+          >
+            Edit
+          </button>
+          <button
+            style={{
+              background: "#fdecea",
+              color: "#ff4d4f",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: 14,
+            }}
+            onClick={onDelete}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -177,6 +229,7 @@ export default function BlogPage() {
   ];
   const [blogs, setBlogs] = useState<
     {
+      id: string;
       title: string;
       img: string;
       summary: string;
@@ -186,6 +239,22 @@ export default function BlogPage() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/blogs");
+        const data = await res.json();
+        setBlogs(data);
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -211,12 +280,44 @@ export default function BlogPage() {
     });
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
+    console.log("Button clicked");
     e.preventDefault();
-    setBlogs([{ ...newBlog }, ...blogs]);
-    setShowCreate(false);
-    setNewBlog({ title: "", img: "", summary: "", category: ["Finance"] });
-    setImagePreview(""); // Clear preview on publish
+
+    if (!newBlog.title || !newBlog.summary || !imageFile) {
+      toast.error("Please fill all required fields and select an image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", newBlog.title);
+    formData.append("summary", newBlog.summary);
+    formData.append("category", newBlog.category.join(","));
+    formData.append("image", imageFile); // imageFile is File object
+
+    try {
+      const res = await fetch("/api/create-blog", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setBlogs([data, ...blogs]);
+        toast.success("Blog created successfully!");
+        setShowCreate(false);
+        setNewBlog({ title: "", img: "", summary: "", category: ["Finance"] });
+        setImagePreview("");
+      } else {
+        toast.error(data.error || "Something went wrong");
+      }
+    } catch (err) {
+      console.log("faied to crate");
+      alert("failed to create blog");
+      console.error("Blog creation error:", err);
+      toast.error("Failed to create blog");
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -225,6 +326,7 @@ export default function BlogPage() {
       const url = URL.createObjectURL(file);
       setImagePreview(url);
       setNewBlog({ ...newBlog, img: url });
+      setImageFile(file);
     }
   };
 
@@ -241,6 +343,26 @@ export default function BlogPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleEdit = (id: string) => {
+    router.push(`/edit-blog/${id}`);
+  };
+
+  const handleDelete = async (id: string) => {
+    const confirmDelete = confirm("Are you sure you want to delete?");
+    if (!confirmDelete) return;
+
+    const res = await fetch(`/api/blog/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      toast.success("Blog deleted");
+      setBlogs((prev) => prev.filter((b) => b.id !== id));
+    } else {
+      toast.error("Failed to delete blog");
+    }
+  };
 
   return (
     <div
@@ -603,43 +725,25 @@ export default function BlogPage() {
                 onChange={handleImageChange}
                 style={{
                   width: "100%",
-                  padding: 12,
-                  fontSize: 18,
+                  padding: 8,
+                  fontSize: 16,
                   borderRadius: 8,
                   border: "1.5px solid #b9aaff",
-                  background: "#f6f3ff",
-                  color: "#313053",
-                  boxSizing: "border-box",
+                  background: "#fff",
                 }}
               />
               {imagePreview && (
-                <div
+                <Image
+                  src={imagePreview}
+                  alt="Preview"
+                  width={180}
+                  height={120}
                   style={{
-                    width: "100%",
-                    height: 240,
-                    background: "#fff",
+                    objectFit: "cover",
                     borderRadius: 12,
                     margin: "8px 0",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1.5px solid #b9aaff",
                   }}
-                >
-                  <Image
-                    src={imagePreview}
-                    alt="Preview"
-                    width={240}
-                    height={240}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      borderRadius: 10,
-                      background: "transparent",
-                    }}
-                  />
-                </div>
+                />
               )}
               {/* End image file input and preview */}
               {/* Custom Multi-Select Category UI */}
@@ -666,7 +770,7 @@ export default function BlogPage() {
                     Select categories...
                   </span>
                 )}
-                {newBlog.category.map((cat) => (
+                {newBlog.category?.map((cat) => (
                   <span
                     key={cat}
                     style={{
@@ -812,15 +916,20 @@ export default function BlogPage() {
               alignItems: "stretch",
             }}
           >
-            {blogs.concat(defaultBlogs).map((blog, idx) => (
-              <BlogCard
-                key={idx}
-                img={blog.img}
-                title={blog.title}
-                summary={blog.summary}
-                category={blog.category}
-              />
-            ))}
+            <div className="flex flex-wrap justify-center gap-6">
+              {blogs.map((blog) => (
+                <BlogCard
+                  key={blog.id} // ✅ use blog.id instead of idx
+                  id={blog.id} // ✅ pass id as a prop
+                  img={blog.img}
+                  title={blog.title}
+                  summary={blog.summary}
+                  category={blog.category}
+                  onEdit={() => handleEdit(blog.id)}
+                  onDelete={() => handleDelete(blog.id)}
+                />
+              ))}
+            </div>
           </div>
           {/* Second row of blog cards */}
           <div

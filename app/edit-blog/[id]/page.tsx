@@ -22,7 +22,7 @@ export default function EditBlogPage() {
         const res = await fetch(`/api/blog/${id}`);
         const data = await res.json();
 
-        console.log("Fetched blog data:", data); // 🔍 Log this
+        console.log("Fetched blog data:", data); 
 
         setForm({
           title: data.title || "the title",
@@ -51,7 +51,7 @@ export default function EditBlogPage() {
     });
 
     if (res.ok) {
-      router.push("/blog"); // Redirect to blogs list
+      router.push("/blog"); 
     } else {
       console.error("Update failed");
     }

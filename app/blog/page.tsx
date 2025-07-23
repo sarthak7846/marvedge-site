@@ -57,7 +57,7 @@ function BlogCard({
       </div>
       <div
         style={{
-          overflowY: "auto", // Only show scrollbar when needed
+          overflowY: "auto",
           flex: 1,
           minHeight: 0,
           marginBottom: "1rem",
@@ -128,7 +128,6 @@ function BlogCard({
         </div>
       </div>
 
-      {/* Learn More + Buttons */}
       <div
         style={{
           display: "flex",
@@ -201,8 +200,8 @@ export default function BlogPage() {
   });
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
     "All",
-  ]); // State for selected filter categories
-  const [showAll, setShowAll] = useState(false); // State to control if all blogs are shown after Load More
+  ]);
+  const [showAll, setShowAll] = useState(false);
   const [blogs, setBlogs] = useState<
     {
       id: string;
@@ -270,7 +269,27 @@ export default function BlogPage() {
 
     try {
       if (isEditing && editingBlogId) {
-        // 🔄 UPDATE logic
+        let uploadedImageUrl = newBlog.img;
+
+        if (imageFile) {
+          const imageForm = new FormData();
+          imageForm.append("image", imageFile);
+
+          const imgRes = await fetch("/api/upload-image", {
+            method: "POST",
+            body: imageForm,
+          });
+
+          const imgData = await imgRes.json();
+
+          if (!imgRes.ok) {
+            toast.error(imgData.error || "Image upload failed.");
+            return;
+          }
+
+          uploadedImageUrl = imgData.url;
+        }
+
         const res = await fetch(`/api/blog/${editingBlogId}`, {
           method: "PUT",
           headers: {
@@ -280,7 +299,7 @@ export default function BlogPage() {
             title: newBlog.title,
             summary: newBlog.summary,
             category: newBlog.category,
-            img: newBlog.img, // You can change this based on your image handling logic
+            img: uploadedImageUrl,
           }),
         });
 
@@ -296,7 +315,6 @@ export default function BlogPage() {
           toast.error(data.error || "Update failed.");
         }
       } else {
-        // ➕ CREATE logic
         const formData = new FormData();
         formData.append("title", newBlog.title);
         formData.append("summary", newBlog.summary);
@@ -320,7 +338,6 @@ export default function BlogPage() {
         }
       }
 
-      // ✅ Reset form
       setNewBlog({ title: "", summary: "", category: ["Finance"], img: "" });
       setImagePreview("");
       setImageFile(null);
@@ -343,7 +360,6 @@ export default function BlogPage() {
     }
   };
 
-  // For filtering and displaying, use blogs directly:
   const filteredBlogs = selectedCategories.includes("All")
     ? blogs
     : blogs.filter((blog) =>
@@ -351,12 +367,10 @@ export default function BlogPage() {
       );
   const blogsToDisplay = showAll ? blogs : filteredBlogs;
 
-  // Handler for Load More
   const handleLoadMore = () => {
     setShowAll(true);
   };
 
-  // Handler for Discover Now button scroll
   const handleDiscoverNow = () => {
     if (blogListRef.current) {
       blogListRef.current.scrollIntoView({
@@ -366,7 +380,6 @@ export default function BlogPage() {
     }
   };
 
-  // Close dropdown on outside click
   React.useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -380,7 +393,6 @@ export default function BlogPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close multiselect dropdown on outside click
   React.useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -398,7 +410,6 @@ export default function BlogPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [multiDropdownOpen]);
 
-  // Handler for custom multiselect
   const handleMultiSelect = (cat: string) => {
     if (cat === "All") {
       setSelectedCategories(["All"]);
@@ -412,7 +423,6 @@ export default function BlogPage() {
     setShowAll(false);
   };
 
-  // Available categories for both filter and blog creation
   const categories = [
     "Finance",
     "Website",
@@ -439,7 +449,6 @@ export default function BlogPage() {
       : null;
   const canEdit = allowedEmails.includes(userEmail || "");
 
-  // Handler for editing a blog
   const handleEditBlog = (blog: (typeof blogs)[0]) => {
     setIsEditing(true);
     setEditingBlogId(blog.id);
@@ -452,7 +461,6 @@ export default function BlogPage() {
     });
   };
 
-  // Handler for deleting a blog
   const handleDeleteBlog = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
     try {
@@ -472,57 +480,71 @@ export default function BlogPage() {
     <div className="min-h-screen bg-gradient-to-b from-white to-f6f3ff flex flex-col">
       <Navbar />
       <div className="flex-grow flex flex-col">
-        <section className="w-full min-h-[70vh] bg-[#FAFEF6] flex flex-col items-center py-12">
+        <section className="w-full min-h-[70vh] bg-[#FAFEF6] flex flex-col items-center py-12 px-4 mt-12">
           <div className="text-center mb-10">
-            <h1 className="text-[48px] font-bold text-[#313053] mb-4">
+            <h1 className="text-3xl md:text-4xl lg:text-[48px] font-bold text-[#313053] mb-4">
               Discover our <span className="text-[#8C5BFF]">Insights</span>
             </h1>
-            <p className="text-[#6d6a7c] text-[22px] font-normal mt-2">
+            <p className="text-[#6d6a7c] text-lg md:text-xl lg:text-[22px] font-normal mt-2">
               Stay updated with our latest uploaded blogs
             </p>
           </div>
-          <div className="blog-feature-section flex flex-row items-stretch bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa55] max-w-[1100px] w-full min-h-[400px] mx-auto p-12 gap-16">
-            <div className="flex-1 flex items-center justify-center">
+
+          <div className="flex flex-col lg:flex-row items-stretch bg-[#f6f3ff] rounded-[24px] lg:rounded-[32px] shadow-[0_4px_32px_#e6e0fa55] w-full max-w-[1100px] min-h-[400px] mx-auto p-6 sm:p-10 lg:p-12 gap-8 lg:gap-16">
+            <div className="w-full lg:w-1/2 flex items-center justify-center">
               <Image
                 src="/images/blog.jpg"
                 alt="Blog visual"
                 width={350}
                 height={350}
-                className="rounded-[32px] object-cover w-[350px] h-[350px]"
+                className="rounded-[24px] lg:rounded-[32px] object-cover w-full max-w-[350px] h-auto"
               />
             </div>
-            <div className="flex-2 flex flex-col justify-center">
-              <span className="bg-[#e6e0fa] text-[#8C5BFF] rounded-[8px] px-[16px] py-1 font-semibold text-[18px] w-fit mb-4">
+
+            <div className="w-full lg:w-1/2 flex flex-col justify-center">
+              <span className="bg-[#e6e0fa] text-[#8C5BFF] rounded-[8px] px-[16px] py-1 font-semibold text-[16px] sm:text-[18px] w-fit mb-4">
                 All
               </span>
-              <h2 className="text-[36px] font-bold text-[#4c3c4c] mb-0">
+
+              <h2 className="text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-[#4c3c4c] mb-0">
                 10 Tips for Successful Blogging
               </h2>
-              <p className="text-[#6d6a7c] text-[20px] mt-4 mb-8">
+
+              <p className="text-[#6d6a7c] text-[16px] sm:text-[18px] lg:text-[20px] mt-4 mb-8">
                 Learn how to create engaging blog content that drives traffic
               </p>
-              <div className="flex justify-center w-full mb-12">
+
+              <div className="flex justify-center sm:justify-start w-full mb-10">
                 <button
-                  className="bg-[#8C5BFF] text-white border-none rounded-[10px] px-12 py-4 text-[20px] font-semibold cursor-pointer shadow-[0_2px_8px_#8C5BFF22] transition hover:bg-[#7a4eea]"
+                  className="bg-[#8C5BFF] text-white border-none rounded-[10px] px-8 sm:px-10 lg:px-12 py-3 sm:py-4 text-base sm:text-lg lg:text-[20px] font-semibold cursor-pointer shadow-[0_2px_8px_#8C5BFF22] transition hover:bg-[#7a4eea]"
                   onClick={handleDiscoverNow}
                 >
                   Discover Now
                 </button>
               </div>
-              <div className="flex items-center gap-4 mt-auto">
-                <Image
-                  src="https://randomuser.me/api/portraits/women/44.jpg"
-                  alt="Joya Mathur"
-                  width={40}
-                  height={40}
-                  className="rounded-full object-cover"
-                />
-                <div className="text-[#4c3c4c] text-[16px]">
-                  <div className="font-semibold">Joya Mathur</div>
-                  <div className="text-[#a1a1b5] text-[14px]">12 July 2025</div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-auto w-full">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="https://randomuser.me/api/portraits/women/44.jpg"
+                    alt="Joya Mathur"
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover"
+                  />
+                  <div className="text-[#4c3c4c]">
+                    <div className="font-semibold text-sm sm:text-base">
+                      Joya Mathur
+                    </div>
+                    <div className="text-[#a1a1b5] text-xs sm:text-sm">
+                      12 July 2025
+                    </div>
+                  </div>
                 </div>
+
                 <div className="flex-1" />
-                <span className="text-[#a1a1b5] flex items-center gap-1.5 text-[16px]">
+
+                <span className="text-[#a1a1b5] flex items-center gap-1.5 text-sm sm:text-base">
                   <svg
                     width="20"
                     height="20"
@@ -551,16 +573,20 @@ export default function BlogPage() {
             <h2 className="text-[48px] font-bold text-[#313053] mb-0 text-left">
               All <span className="text-[#8C5BFF]">Blog Posts</span>
             </h2>
-            <div className="blog-header-controls flex flex-row items-center gap-6 ml-auto">
-              <span className="text-[#4c3c4c] text-[22px]">Sort By :</span>
-              {/* Custom Multiselect Dropdown */}
-              <div className="relative min-w-[180px]" ref={multiDropdownRef}>
+            <div className="blog-header-controls flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 ml-0 sm:ml-auto w-full sm:w-auto">
+              <span className="text-[#4c3c4c] text-[18px] sm:text-[22px]">
+                Sort By :
+              </span>
+              <div
+                className="relative min-w-full sm:min-w-[180px] w-full sm:w-auto"
+                ref={multiDropdownRef}
+              >
                 <button
                   type="button"
-                  className="bg-[#9066F9] text-white border-none rounded-[14px] font-semibold text-[20px] px-8 py-3 shadow-[0_2px_8px_#9066F955] outline-none cursor-pointer flex justify-between items-center min-w-[180px] w-full transition hover:bg-[#7a4eea] focus:ring-2 focus:ring-[#b9aaff]"
+                  className="bg-[#9066F9] text-white border-none rounded-[14px] font-semibold text-[18px] sm:text-[20px] px-6 sm:px-8 py-3 shadow-[0_2px_8px_#9066F955] outline-none cursor-pointer flex justify-between items-center w-full transition hover:bg-[#7a4eea] focus:ring-2 focus:ring-[#b9aaff]"
                   onClick={() => setMultiDropdownOpen((v) => !v)}
                 >
-                  <span className="truncate text-white text-[18px] font-semibold text-left">
+                  <span className="truncate text-white text-[16px] sm:text-[18px] font-semibold text-left">
                     {selectedCategories[0] === "All"
                       ? "All"
                       : selectedCategories.join(", ")}
@@ -617,7 +643,7 @@ export default function BlogPage() {
               </div>
               {canEdit && (
                 <button
-                  className="bg-[#8C5BFF] text-white border-none rounded-[12px] font-semibold text-[20px] px-[32px] py-3 shadow-[0_2px_8px_#8C5BFF22] cursor-pointer flex items-center gap-1.5"
+                  className="bg-[#8C5BFF] text-white border-none rounded-[12px] font-semibold text-[18px] sm:text-[20px] px-[24px] sm:px-[32px] py-3 shadow-[0_2px_8px_#8C5BFF22] cursor-pointer flex items-center gap-1.5 w-full sm:w-auto justify-center"
                   onClick={() => setShowCreate((v) => !v)}
                 >
                   Create New Blog
@@ -758,7 +784,6 @@ export default function BlogPage() {
               gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
             }}
           >
-            {/* If a sort is selected, show the featured blog at the top, then all blogs below after Load More */}
             {blogsToDisplay.map((blog, idx) => (
               <BlogCard
                 key={idx}
@@ -792,6 +817,130 @@ export default function BlogPage() {
                 />
               </svg>
             </button>
+          </div>
+        </section>
+        <section
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "48px 0 0 0",
+          }}
+        >
+          <div
+            style={{
+              width: "90%",
+              maxWidth: 1400,
+              background: "linear-gradient(135deg, #fff 60%, #f6f3ff 100%)",
+              borderRadius: 48,
+              boxShadow: "0 4px 32px #e6e0fa33",
+              padding: "64px 32px 48px 32px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: 56,
+                fontWeight: 800,
+                color: "#313053",
+                margin: 0,
+                textAlign: "center",
+              }}
+            >
+              Stay Updated{" "}
+              <span style={{ color: "#8C5BFF" }}>With Our Newsletter</span>
+            </h2>
+            <p
+              style={{
+                color: "#6d6a7c",
+                fontSize: 28,
+                fontWeight: 400,
+                margin: "32px 0 40px 0",
+                textAlign: "center",
+                maxWidth: 800,
+              }}
+            >
+              Subscribe to our newsletter for the latest updates and insights
+              <br />
+              on no-code / low code development.
+            </p>
+            <form
+              className="newsletter-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const email = (
+                  e.currentTarget.elements.namedItem(
+                    "newsletterEmail"
+                  ) as HTMLInputElement
+                )?.value;
+                if (email) {
+                  window.location.href = `/?waitlist=${encodeURIComponent(
+                    email
+                  )}#waitlist-form-section`;
+                }
+              }}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 24,
+                width: "100%",
+                maxWidth: 700,
+                marginBottom: 24,
+              }}
+            >
+              <input
+                name="newsletterEmail"
+                type="email"
+                placeholder="Enter Your Email"
+                required
+                style={{
+                  flex: 1,
+                  padding: "18px 24px",
+                  fontSize: 22,
+                  borderRadius: 12,
+                  border: "2px solid #e6e0fa",
+                  outline: "none",
+                  background: "#fff",
+                  color: "#313053",
+                  fontWeight: 500,
+                  transition: "border 0.2s",
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  background: "#8C5BFF",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 12,
+                  fontSize: 24,
+                  fontWeight: 600,
+                  padding: "0 48px",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 8px #8C5BFF22",
+                  transition: "background 0.2s",
+                }}
+              >
+                Join Now
+              </button>
+            </form>
+            <div
+              style={{
+                color: "#8C5BFF",
+                fontSize: 18,
+                marginTop: 8,
+                textAlign: "center",
+              }}
+            >
+              By joining you Agree to our{" "}
+              <span style={{ textDecoration: "underline", cursor: "pointer" }}>
+                Terms and Conditions
+              </span>
+              .
+            </div>
           </div>
         </section>
         <section className="faq-section-container flex justify-center items-start mt-24">

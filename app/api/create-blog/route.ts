@@ -18,28 +18,29 @@ export async function POST(req: Request) {
     const image = formData.get("image") as File;
 
     if (!title || !summary || !category || !image) {
-      return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields." },
+        { status: 400 }
+      );
     }
 
-    // Convert the image File to a Buffer
     const arrayBuffer = await image.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to Cloudinary
-    const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "my-blog-app" },
-        (error, result) => {
-          if (error || !result) reject(error);
-          else resolve(result);
-        }
-      );
+    const uploadResult = await new Promise<{ secure_url: string }>(
+      (resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "my-blog-app" },
+          (error, result) => {
+            if (error || !result) reject(error);
+            else resolve(result);
+          }
+        );
 
-      stream.end(buffer);
-    });
+        stream.end(buffer);
+      }
+    );
 
-    // Save to database
-    
     const blog = await prisma.blog.create({
       data: {
         title,
@@ -52,6 +53,9 @@ export async function POST(req: Request) {
     return NextResponse.json(blog, { status: 201 });
   } catch (error) {
     console.error("Blog creation error:", error);
-    return NextResponse.json({ error: "Failed to create blog post." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create blog post." },
+      { status: 500 }
+    );
   }
 }

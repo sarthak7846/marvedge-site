@@ -25,7 +25,6 @@ const Navbar: React.FC = () => {
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Read user name and email from localStorage
     const storedName = localStorage.getItem("marvedgeUserName");
     const storedEmail = localStorage.getItem("marvedgeUserEmail");
     setUserName(storedName);
@@ -84,7 +83,6 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center space-x-8 text-[#313053] font-medium">
             <NavButton href="/aboutus">About Us</NavButton>
             <NavButton href="/blog">Blog</NavButton>
-            {/* User initials or icon */}
             <div className="ml-6 flex items-center">
               {isLoggedIn ? (
                 <div className="relative" ref={dropdownRef}>
@@ -145,7 +143,6 @@ const Navbar: React.FC = () => {
                 Blog
               </button>
             </Link>
-            {/* User initials or icon for mobile */}
             <div className="w-full flex justify-center mt-2">
               {isLoggedIn ? (
                 <div className="w-10 h-10 rounded-full bg-[#6356D7] text-white flex items-center justify-center text-lg font-bold shadow cursor-pointer border-4 border-white hover:scale-105 transition-all">

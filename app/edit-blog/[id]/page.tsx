@@ -26,7 +26,7 @@ export default function EditBlogPage() {
 
         setForm({
           title: data.title || "the title",
-          summary: data.summary || "the summaryu",
+          summary: data.summary || "the summary",
           category: data.category || [],
           img: data.img || "",
         });

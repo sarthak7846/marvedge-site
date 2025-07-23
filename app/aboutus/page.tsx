@@ -292,7 +292,7 @@ export default function AboutUsPage() {
           </div>
           <div className="flex flex-col items-center">
             <Image
-              src="https://randomuser.me/api/portraits/men/75.jpg"
+              src="/images/aboutusgetintouch.jpg"
               alt="Soumya Ranjan Nayak"
               width={48}
               height={48}
@@ -307,7 +307,6 @@ export default function AboutUsPage() {
           </div>
         </div>
       </section>
-      {/* Reduce gap between CEO and contact form */}
       <div className="mt-[-120]">
         <ContactFormSection />
       </div>

@@ -3,35 +3,56 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { prisma } from "@/app/lib/prisma";
+import { toast } from "react-hot-toast";
 
 function BlogCard({
   img,
   title,
   summary,
   category,
+  onEdit,
+  onDelete,
 }: {
+  id: string;
   img: string;
   title: string;
   summary: string;
   category: string[];
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   return (
-    <div
-      className="bg-gradient-to-br from-white via-[#f6f3ff] to-[#ede7ff] border border-[#e6e0fa] rounded-[32px] shadow-2xl w-[420px] min-h-[480px] p-7 flex flex-col mb-8 transition-all duration-300 hover:shadow-[0_16px_48px_#b9aaff55] hover:border-[#b9aaff] hover:-translate-y-2 hover:scale-[1.035]"
-    >
+    <div className="bg-gradient-to-br from-white via-[#f6f3ff] to-[#ede7ff] border border-[#e6e0fa] rounded-[32px] shadow-2xl w-[420px] min-h-[480px] p-7 flex flex-col mb-8 transition-all duration-300 hover:shadow-[0_16px_48px_#b9aaff55] hover:border-[#b9aaff] hover:-translate-y-2 hover:scale-[1.035]">
       <img
         src={img}
         alt="Blog"
         className="rounded-[22px] object-cover w-full h-[180px] mb-5"
-        style={{ aspectRatio: '16/9' }}
+        style={{ aspectRatio: "16/9" }}
       />
       <div className="flex items-center gap-2 text-[#9066F9] text-[16px] font-medium mb-2">
-        <svg className="w-5 h-5" fill="none" stroke="#9066F9" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#9066F9" strokeWidth="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" stroke="#9066F9" strokeWidth="2" /></svg>
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="#9066F9"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="12" cy="12" r="10" stroke="#9066F9" strokeWidth="2" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 6v6l4 2"
+            stroke="#9066F9"
+            strokeWidth="2"
+          />
+        </svg>
         <span>5 min read</span>
       </div>
-      <h3 className="text-[24px] font-bold text-[#3d2966] leading-tight mb-1">{title}</h3>
+      <h3 className="text-[24px] font-bold text-[#3d2966] leading-tight mb-1">
+        {title}
+      </h3>
       <p className="text-[#6d6a7c] text-[17px] mb-4">{summary}</p>
       <div className="flex gap-2 flex-wrap mb-4">
         {category.map((cat, i) => (
@@ -43,12 +64,110 @@ function BlogCard({
           </span>
         ))}
       </div>
-      <a
-        href="#"
-        className="text-[#9066F9] font-semibold text-[18px] mt-auto flex items-center gap-1.5 hover:text-[#7a4eea] transition"
+      <h3
+        style={{ fontSize: 26, fontWeight: 700, color: "#4c3c4c", margin: 0 }}
       >
-        Learn more <span className="text-[20px]">&gt;</span>
-      </a>
+        {title}
+      </h3>
+      <p style={{ color: "#6d6a7c", fontSize: 18, margin: "10px 0 16px 0" }}>
+        {summary}
+      </p>
+      <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
+        <span
+          style={{
+            background: "#e6e0fa",
+            color: "#8C5BFF",
+            borderRadius: 8,
+            padding: "4px 14px",
+            fontWeight: 600,
+            fontSize: 15,
+          }}
+        >
+          Finance
+        </span>
+        <span
+          style={{
+            background: "#e6e0fa",
+            color: "#8C5BFF",
+            borderRadius: 8,
+            padding: "4px 14px",
+            fontWeight: 600,
+            fontSize: 15,
+          }}
+        >
+          Website
+        </span>
+        <span
+          style={{
+            background: "#e6e0fa",
+            color: "#8C5BFF",
+            borderRadius: 8,
+            padding: "4px 14px",
+            fontWeight: 600,
+            fontSize: 15,
+          }}
+        >
+          Case Study
+        </span>
+      </div>
+
+      {/* Learn More + Buttons */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: "auto",
+        }}
+      >
+        <Link
+          href="#"
+          style={{
+            color: "#8C5BFF",
+            fontWeight: 600,
+            fontSize: 18,
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          Learn more <span style={{ fontSize: 20 }}>→</span>
+        </Link>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            style={{
+              background: "#e6e0fa",
+              color: "#8C5BFF",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: 14,
+            }}
+            onClick={onEdit}
+          >
+            Edit
+          </button>
+          <button
+            style={{
+              background: "#fdecea",
+              color: "#ff4d4f",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: 14,
+            }}
+            onClick={onDelete}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -106,6 +225,7 @@ export default function BlogPage() {
   ];
   const [blogs, setBlogs] = useState<
     {
+      id: string;
       title: string;
       img: string;
       summary: string;
@@ -118,6 +238,24 @@ export default function BlogPage() {
   const blogListRef = React.useRef<HTMLDivElement>(null);
   const [multiDropdownOpen, setMultiDropdownOpen] = useState(false);
   const multiDropdownRef = useRef<HTMLDivElement>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/blogs");
+        const data = await res.json();
+        setBlogs(data);
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -143,12 +281,77 @@ export default function BlogPage() {
     });
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBlogs([{ ...newBlog }, ...blogs]);
-    setShowCreate(false);
-    setNewBlog({ title: "", img: "", summary: "", category: ["Finance"] });
-    setImagePreview(""); // Clear preview on publish
+
+    if (!newBlog.title || !newBlog.summary || (!imageFile && !isEditing)) {
+      toast.error("Please fill all required fields and select an image.");
+      return;
+    }
+
+    try {
+      if (isEditing && editingBlogId) {
+        // 🔄 UPDATE logic
+        const res = await fetch(`/api/blog/${editingBlogId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: newBlog.title,
+            summary: newBlog.summary,
+            category: newBlog.category,
+            img: newBlog.img, // You can change this based on your image handling logic
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          const updatedBlogs = blogs.map((b) =>
+            b.id === editingBlogId ? data : b
+          );
+          setBlogs(updatedBlogs);
+          toast.success("Blog updated!");
+        } else {
+          toast.error(data.error || "Update failed.");
+        }
+      } else {
+        // ➕ CREATE logic
+        const formData = new FormData();
+        formData.append("title", newBlog.title);
+        formData.append("summary", newBlog.summary);
+        formData.append("category", newBlog.category.join(","));
+        if (imageFile) {
+          formData.append("image", imageFile);
+        }
+
+        const res = await fetch("/api/create-blog", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          setBlogs([data, ...blogs]);
+          toast.success("Blog created successfully!");
+        } else {
+          toast.error(data.error || "Creation failed.");
+        }
+      }
+
+      // ✅ Reset form
+      setNewBlog({ title: "", summary: "", category: ["Finance"], img: "" });
+      setImagePreview("");
+      setImageFile(null);
+      setIsEditing(false);
+      setEditingBlogId(null);
+      setShowCreate(false);
+    } catch (err) {
+      console.error("Blog submit error:", err);
+      toast.error("Something went wrong.");
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,6 +360,7 @@ export default function BlogPage() {
       const url = URL.createObjectURL(file);
       setImagePreview(url);
       setNewBlog({ ...newBlog, img: url });
+      setImageFile(file);
     }
   };
 
@@ -390,7 +594,9 @@ export default function BlogPage() {
                       : selectedCategories.join(", ")}
                   </span>
                   <svg
-                    className={`w-5 h-5 transition-transform ${multiDropdownOpen ? "rotate-180" : ""}`}
+                    className={`w-5 h-5 transition-transform ${
+                      multiDropdownOpen ? "rotate-180" : ""
+                    }`}
                     fill="none"
                     stroke="white"
                     strokeWidth="2"
@@ -482,8 +688,20 @@ export default function BlogPage() {
                 htmlFor="blog-image-upload"
                 className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-[#f6f3ff] text-[#8C5BFF] border border-[#b9aaff] rounded-[8px] font-semibold text-[18px] cursor-pointer hover:bg-[#ede7ff] transition mb-2 shadow-sm"
               >
-                <svg className="w-6 h-6" fill="none" stroke="#8C5BFF" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-                {imagePreview ? 'Change Image' : 'Upload Image'}
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="#8C5BFF"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                {imagePreview ? "Change Image" : "Upload Image"}
               </label>
               {imagePreview && (
                 <div className="w-full h-48 bg-white rounded-[12px] flex items-center justify-center border border-[#b9aaff] mt-2">

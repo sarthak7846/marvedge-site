@@ -1,0 +1,67 @@
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+
+
+export async function DELETE(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
+
+  try {
+    await prisma.blog.delete({ where: { id } });
+    return NextResponse.json({ message: "Deleted successfully" });
+  } catch {
+    return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
+  }
+}
+
+
+export async function PUT(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
+  const data = await req.json();
+
+  try {
+    const updated = await prisma.blog.update({
+      where: { id },
+      data: {
+        title: data.title,
+        summary: data.summary,
+        category: Array.isArray(data.category)
+          ? data.category
+          : data.category.split(",").map((s: string) => s.trim()),
+        img: data.img,
+      },
+    });
+
+    return NextResponse.json(updated);
+  } catch {
+    return NextResponse.json({ error: "Failed to update blog" }, { status: 500 });
+  }
+}
+
+
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
+
+  try {
+    const blog = await prisma.blog.findUnique({
+      where: { id },
+    });
+
+    if (!blog) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(blog);
+  } catch  {
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+  }
+}
+

@@ -3,8 +3,47 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import toast from "react-hot-toast";
 
 function ContactFormSection() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        toast.success("Message sent!");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        toast.error("Failed to send message");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <section
       id="contact"
@@ -25,28 +64,78 @@ function ContactFormSection() {
             type="text"
             placeholder="Enter your First Name"
             required
-            className="flex-1 px-4 py-4 text-[18px] rounded-[8px] border border-[#b9aaff] outline-none bg-white text-[#313053] font-medium transition-colors duration-200"
+            value={formData.firstName}
+            onChange={(e) =>
+              setFormData({ ...formData, firstName: e.target.value })
+            }
+            style={{
+              flex: 1,
+              padding: "16px 18px",
+              fontSize: 18,
+              borderRadius: 8,
+              border: "1.5px solid #b9aaff",
+              outline: "none",
+              background: "#fff",
+              color: "#313053",
+              fontWeight: 500,
+              transition: "border 0.2s",
+            }}
           />
           <input
             type="text"
             placeholder="Enter your Last Name"
             required
-            className="flex-1 px-4 py-4 text-[18px] rounded-[8px] border border-[#b9aaff] outline-none bg-white text-[#313053] font-medium transition-colors duration-200"
+            value={formData.lastName}
+            onChange={(e) =>
+              setFormData({ ...formData, lastName: e.target.value })
+            }
+            style={{
+              flex: 1,
+              padding: "16px 18px",
+              fontSize: 18,
+              borderRadius: 8,
+              border: "1.5px solid #b9aaff",
+              outline: "none",
+              background: "#fff",
+              color: "#313053",
+              fontWeight: 500,
+              transition: "border 0.2s",
+            }}
           />
         </div>
         <input
           type="email"
           placeholder="Enter your email"
           required
-          className="w-full px-4 py-4 text-[18px] rounded-[8px] border border-[#b9aaff] outline-none bg-white text-[#313053] font-medium mb-4 transition-colors duration-200"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          style={{
+            width: "100%",
+            padding: "16px 18px",
+            fontSize: 18,
+            borderRadius: 8,
+            border: "1.5px solid #b9aaff",
+            outline: "none",
+            background: "#fff",
+            color: "#313053",
+            fontWeight: 500,
+            marginBottom: 18,
+            transition: "border 0.2s",
+          }}
         />
         <input
           type="tel"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           placeholder="Enter your phone number"
           className="w-full px-4 py-4 text-[18px] rounded-[8px] border border-[#b9aaff] outline-none bg-white text-[#313053] font-medium mb-4 transition-colors duration-200"
         />
         <textarea
           placeholder="Enter your message"
+          value={formData.message}
+          onChange={(e) =>
+            setFormData({ ...formData, message: e.target.value })
+          }
           required
           rows={4}
           className="w-full px-4 py-4 text-[18px] rounded-[8px] border border-[#b9aaff] outline-none bg-white text-[#313053] font-medium mb-7 resize-y transition-colors duration-200"
@@ -103,54 +192,123 @@ function TeamCarousel() {
   const getIdx = (offset: number) =>
     (centerIdx + offset + teamMembers.length) % teamMembers.length;
 
-  // return (
-  //   <div
-  //     className="w-full max-w-[1500px] flex justify-center items-center flex-end gap-14 relative h-[450px] mx-auto mb-8 overflow-x-auto pb-8"
-  //   >
-  //     {[-2, -1, 0, 1, 2].map((offset: number) => {
-  //       const idx = getIdx(offset);
-  //       const member = teamMembers[idx];
-  //       const isCenter = offset === 0;
-  //       return (
-  //         <div
-  //           key={idx}
-  //           className={`relative z-${isCenter ? 2 : 1} transition-all duration-500 ${
-  //             isCenter
-  //               ? "scale-118 translate-y-[-18px]"
-  //               : offset === -1 || offset === 1
-  //               ? "scale-92 translate-y-[10px]"
-  //               : "scale-80 translate-y-[30px]"
-  //           } ${isCenter ? "" : "grayscale-50 opacity-70"} ${
-  //             isCenter ? "shadow-[0_8px_32px_#8C5BFF33]" : "shadow-[0_2px_8px_#e6e0fa33]"
-  //           } rounded-[24px] border-top-left-radius-[24px] border-top-right-radius-[24px] bg-[#f6f3ff] p-0 m-0 flex flex-col items-center justify-end min-w-[180px] max-w-[320px] w-auto`}
-  //         >
-  //           <div
-  //             className="w-full flex items-center justify-center bg-transparent rounded-top-left-24 rounded-top-right-24 p-0 min-h-[180px] max-h-[320px] overflow-hidden"
-  //           >
-  //             <Image
-  //               src={member.img}
-  //               alt={member.name}
-  //               width={isCenter ? 220 : 140}
-  //               height={isCenter ? 300 : 200}
-  //               className="max-w-full max-h-full object-contain h-auto transition-all duration-500 bg-transparent block mx-auto"
-  //               unoptimized
-  //             />
-  //           </div>
-  //           <div
-  //             className="bg-[#8C5BFF] text-white w-full text-center font-bold text-[22px] leading-tight tracking-wider pb-4 rounded-bottom-left-24 rounded-bottom-right-24"
-  //           >
-  //             {member.name}
-  //             <div
-  //               className="text-[#e6e0fa] text-[16px] font-normal mt-1"
-  //             >
-  //               {member.role}
-  //             </div>
-  //           </div>
-  //         </div>
-  //       );
-  //     })}
-  //   </div>
-  // );
+  return (
+    <div
+      style={{
+        width: "100%",
+        maxWidth: 1500,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-end",
+        gap: 56,
+        position: "relative",
+        height: 450,
+        margin: "40px auto 24px auto",
+        overflowX: "auto",
+        padding: "0 0 24px 0",
+      }}
+    >
+      {[-2, -1, 0, 1, 2].map((offset: number) => {
+        const idx = getIdx(offset);
+        const member = teamMembers[idx];
+        const isCenter = offset === 0;
+        return (
+          <div
+            key={idx}
+            style={{
+              position: "relative",
+              zIndex: isCenter ? 2 : 1,
+              transition: "all 0.5s cubic-bezier(.4,2,.6,1)",
+              transform: isCenter
+                ? "scale(1.18) translateY(-18px)"
+                : offset === -1 || offset === 1
+                ? "scale(0.92) translateY(10px)"
+                : "scale(0.8) translateY(30px)",
+              filter: isCenter ? "none" : "grayscale(0.5)",
+              opacity: isCenter ? 1 : 0.7,
+              boxShadow: isCenter
+                ? "0 8px 32px #8C5BFF33"
+                : "0 2px 8px #e6e0fa33",
+              borderRadius: 24,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              background: "#f6f3ff",
+              padding: 0,
+              margin: 0,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              minWidth: 180,
+              maxWidth: 320,
+              width: "auto",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "transparent",
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+                padding: 0,
+                minHeight: 180,
+                maxHeight: 320,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                src={member.img}
+                alt={member.name}
+                width={isCenter ? 220 : 140}
+                height={isCenter ? 300 : 200}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: isCenter ? 300 : 200,
+                  objectFit: "contain",
+                  height: "auto",
+                  transition:
+                    "filter 0.5s, transform 0.5s, max-width 0.5s, max-height 0.5s",
+                  background: "transparent",
+                  display: "block",
+                  margin: "auto",
+                }}
+                unoptimized
+              />
+            </div>
+            <div
+              style={{
+                background: "#8C5BFF",
+                color: "#fff",
+                width: "100%",
+                padding: "20px 0 14px 0",
+                textAlign: "center",
+                fontWeight: 700,
+                fontSize: 22,
+                letterSpacing: 0.2,
+                borderBottomLeftRadius: 24,
+                borderBottomRightRadius: 24,
+              }}
+            >
+              {member.name}
+              <div
+                style={{
+                  fontWeight: 400,
+                  fontSize: 16,
+                  color: "#e6e0fa",
+                  marginTop: 4,
+                }}
+              >
+                {member.role}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export default function AboutUsPage() {

@@ -1,16 +1,22 @@
 "use client";
 import "./globals.css";
-import { usePathname } from 'next/navigation';
-import Navbar from './components/Navbar';
+import { usePathname } from "next/navigation";
+import Navbar from "./components/Navbar";
+import { Toaster } from "react-hot-toast";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const showNavbar = !pathname.startsWith('/auth/');
+  const showNavbar = !pathname.startsWith("/auth/");
   return (
-    <html lang="en" className="overflow-x-hidden">
+    <html
+      lang="en"
+      className="overflow-x-hidden"
+      suppressHydrationWarning={true}
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{`
@@ -24,6 +30,8 @@ export default function RootLayout({
       </head>
       <body className="overflow-x-hidden">
         {showNavbar && <Navbar />}
+
+        <Toaster position="top-right" />
         {children}
       </body>
     </html>

@@ -526,7 +526,7 @@ export default function BlogPage() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-auto w-full">
                 <div className="flex items-center gap-3">
                   <Image
-                    src="https://randomuser.me/api/portraits/women/44.jpg"
+                    src="/images/joyamathur.jpg"
                     alt="Joya Mathur"
                     width={40}
                     height={40}
@@ -537,7 +537,7 @@ export default function BlogPage() {
                       Joya Mathur
                     </div>
                     <div className="text-[#a1a1b5] text-xs sm:text-sm">
-                      12 July 2025
+                      23 July 2025
                     </div>
                   </div>
                 </div>

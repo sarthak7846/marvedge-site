@@ -471,6 +471,9 @@ export default function BlogPage() {
     setSelectedCategories(newSelected.length ? newSelected : ["All"]);
   };
 
+  // Add this function to fix the error
+  const handleCreate = handleSubmit;
+
   // Available categories for both filter and blog creation
   const categories = [
     "Finance",

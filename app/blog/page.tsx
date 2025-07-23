@@ -8,12 +8,14 @@ import { prisma } from "@/app/lib/prisma";
 import { toast } from "react-hot-toast";
 
 function BlogCard({
+  id,
   img,
   title,
   summary,
   category,
   onEdit,
   onDelete,
+  canEdit,
 }: {
   id: string;
   img: string;
@@ -22,6 +24,7 @@ function BlogCard({
   category: string[];
   onEdit?: () => void;
   onDelete?: () => void;
+  canEdit?: boolean;
 }) {
   return (
     <div className="bg-gradient-to-br from-white via-[#f6f3ff] to-[#ede7ff] border border-[#e6e0fa] rounded-[32px] shadow-2xl w-[420px] min-h-[480px] p-7 flex flex-col mb-8 transition-all duration-300 hover:shadow-[0_16px_48px_#b9aaff55] hover:border-[#b9aaff] hover:-translate-y-2 hover:scale-[1.035]">
@@ -135,38 +138,40 @@ function BlogCard({
           Learn more <span style={{ fontSize: 20 }}>→</span>
         </Link>
 
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            style={{
-              background: "#e6e0fa",
-              color: "#8C5BFF",
-              border: "none",
-              padding: "6px 12px",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: 14,
-            }}
-            onClick={onEdit}
-          >
-            Edit
-          </button>
-          <button
-            style={{
-              background: "#fdecea",
-              color: "#ff4d4f",
-              border: "none",
-              padding: "6px 12px",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: 14,
-            }}
-            onClick={onDelete}
-          >
-            Delete
-          </button>
-        </div>
+        {canEdit && (
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              style={{
+                background: "#e6e0fa",
+                color: "#8C5BFF",
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: 6,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 14,
+              }}
+              onClick={onEdit}
+            >
+              Edit
+            </button>
+            <button
+              style={{
+                background: "#fdecea",
+                color: "#ff4d4f",
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: 6,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 14,
+              }}
+              onClick={onDelete}
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -186,18 +191,21 @@ export default function BlogPage() {
   const [showAll, setShowAll] = useState(false); // State to control if all blogs are shown after Load More
   const defaultBlogs = [
     {
+      id: "default-1",
       title: "The Importance of Blogging for Business",
       img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
       summary: "Discover how blogging can boost your business growth.",
       category: ["Finance"],
     },
     {
+      id: "default-2",
       title: "10 Tips for Successful Blogging",
       img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
       summary: "Learn how to create engaging blog content that drives traffic.",
       category: ["Website"],
     },
     {
+      id: "default-3",
       title: "How to Build a Personal Brand Online",
       img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
       summary:
@@ -205,18 +213,21 @@ export default function BlogPage() {
       category: ["Marketing"],
     },
     {
+      id: "default-4",
       title: "Case Study: SaaS Growth Hacking",
       img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80",
       summary: "A real-world example of how a SaaS company scaled rapidly.",
       category: ["Case Study"],
     },
     {
+      id: "default-5",
       title: "The Future of Product Design",
       img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
       summary: "Exploring trends and innovations in product design.",
       category: ["Product"],
     },
     {
+      id: "default-6",
       title: "Tech Stack Essentials for Startups",
       img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
       summary: "Choosing the right technology stack for your startup success.",
@@ -364,14 +375,18 @@ export default function BlogPage() {
     }
   };
 
-  // Filter blogs based on selected category
+  // All blogs (from backend and default)
+  const allBlogs = blogs.concat(defaultBlogs);
+
+  // Filtered blogs based on selected category
   const filteredBlogs = selectedCategories.includes("All")
-    ? blogs.concat(defaultBlogs)
-    : blogs
-        .concat(defaultBlogs)
-        .filter((blog) =>
-          blog.category.some((cat) => selectedCategories.includes(cat))
-        );
+    ? allBlogs
+    : allBlogs.filter((blog) =>
+        blog.category.some((cat) => selectedCategories.includes(cat))
+      );
+
+  // Blogs to display: filtered by default, all after Load More
+  const blogsToDisplay = showAll ? allBlogs : filteredBlogs;
 
   // Logic for sorted/featured blog and the rest
   let featuredBlog = null;
@@ -380,8 +395,6 @@ export default function BlogPage() {
     featuredBlog = filteredBlogs[0];
   }
   // All blogs (from all categories)
-  const allBlogs = blogs.concat(defaultBlogs);
-  // Remove the featured blog from allBlogs (if present)
   const allOtherBlogs = featuredBlog
     ? allBlogs.filter(
         (blog) =>
@@ -499,6 +512,35 @@ export default function BlogPage() {
       : null;
   const canEdit = allowedEmails.includes(userEmail || "");
 
+  // Handler for editing a blog
+  const handleEditBlog = (blog: (typeof blogs)[0]) => {
+    setIsEditing(true);
+    setEditingBlogId(blog.id);
+    setShowCreate(true);
+    setNewBlog({
+      title: blog.title,
+      img: blog.img,
+      summary: blog.summary,
+      category: blog.category,
+    });
+  };
+
+  // Handler for deleting a blog
+  const handleDeleteBlog = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this blog?")) return;
+    try {
+      const res = await fetch(`/api/blog/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setBlogs(blogs.filter((b) => b.id !== id));
+        toast.success("Blog deleted!");
+      } else {
+        toast.error("Failed to delete blog.");
+      }
+    } catch {
+      toast.error("Failed to delete blog.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-f6f3ff flex flex-col">
       <Navbar />
@@ -515,7 +557,7 @@ export default function BlogPage() {
           <div className="blog-feature-section flex flex-row items-stretch bg-[#f6f3ff] rounded-[32px] shadow-[0_4px_32px_#e6e0fa55] max-w-[1100px] w-full min-h-[400px] mx-auto p-12 gap-16">
             <div className="flex-1 flex items-center justify-center">
               <Image
-                src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80"
+                src="/images/blog.jpg"
                 alt="Blog visual"
                 width={350}
                 height={350}
@@ -790,13 +832,17 @@ export default function BlogPage() {
             }}
           >
             {/* If a sort is selected, show the featured blog at the top, then all blogs below after Load More */}
-            {filteredBlogs.map((blog, idx) => (
+            {blogsToDisplay.map((blog, idx) => (
               <BlogCard
                 key={idx}
+                id={blog.id}
                 img={blog.img}
                 title={blog.title}
                 summary={blog.summary}
                 category={blog.category}
+                onEdit={blog.id ? () => handleEditBlog(blog) : undefined}
+                onDelete={blog.id ? () => handleDeleteBlog(blog.id) : undefined}
+                canEdit={canEdit}
               />
             ))}
           </div>

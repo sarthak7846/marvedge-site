@@ -1,12 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
-  const { id } = await context.params;
+  const { id } = context.params;
 
   try {
     await prisma.blog.delete({ where: { id } });
@@ -16,12 +15,11 @@ export async function DELETE(
   }
 }
 
-
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
-  const { id } = await context.params;
+  const { id } = context.params;
   const data = await req.json();
 
   try {
@@ -43,12 +41,11 @@ export async function PUT(
   }
 }
 
-
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
-  const { id } = await context.params;
+  const { id } = context.params;
 
   try {
     const blog = await prisma.blog.findUnique({

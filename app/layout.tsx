@@ -1,12 +1,18 @@
 "use client";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-x-hidden">
+    <html
+      lang="en"
+      className="overflow-x-hidden"
+      suppressHydrationWarning={true}
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{`
@@ -18,7 +24,10 @@ export default function RootLayout({
           }
         `}</style>
       </head>
-      <body className="overflow-x-hidden">{children}</body>
+      <body className="overflow-x-hidden">
+        <Toaster position="top-right" />
+        {children}
+      </body>
     </html>
   );
 }

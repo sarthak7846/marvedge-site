@@ -3,18 +3,24 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 function BlogCard({
   img,
   title,
   summary,
   category,
+  onEdit,
+  onDelete,
 }: {
+  id: string;
   img: string;
   title: string;
   summary: string;
   category: string[];
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   return (
     <div
@@ -46,7 +52,7 @@ function BlogCard({
       <div
         style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}
       >
-        {category.map((cat, i) => (
+        {category?.map((cat, i) => (
           <span
             key={i}
             style={{
@@ -109,21 +115,64 @@ function BlogCard({
           Case Study
         </span>
       </div>
-      <Link
-        href="#"
+
+      {/* Learn More + Buttons */}
+      <div
         style={{
-          color: "#8C5BFF",
-          fontWeight: 600,
-          fontSize: 18,
-          textDecoration: "none",
-          marginTop: "auto",
           display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
-          gap: 6,
+          marginTop: "auto",
         }}
       >
-        Learn more <span style={{ fontSize: 20 }}>→</span>
-      </Link>
+        <Link
+          href="#"
+          style={{
+            color: "#8C5BFF",
+            fontWeight: 600,
+            fontSize: 18,
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          Learn more <span style={{ fontSize: 20 }}>→</span>
+        </Link>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            style={{
+              background: "#e6e0fa",
+              color: "#8C5BFF",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: 14,
+            }}
+            onClick={onEdit}
+          >
+            Edit
+          </button>
+          <button
+            style={{
+              background: "#fdecea",
+              color: "#ff4d4f",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: 14,
+            }}
+            onClick={onDelete}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -136,47 +185,10 @@ export default function BlogPage() {
     summary: "",
     category: ["Finance"],
   });
-  const defaultBlogs = [
-    {
-      title: "The Importance of Blogging for Business",
-      img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
-      summary: "Discover how blogging can boost your business growth.",
-      category: ["Finance"],
-    },
-    {
-      title: "10 Tips for Successful Blogging",
-      img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
-      summary: "Learn how to create engaging blog content that drives traffic.",
-      category: ["Website"],
-    },
-    {
-      title: "How to Build a Personal Brand Online",
-      img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
-      summary:
-        "Tips and tricks for building your personal brand in the digital age.",
-      category: ["Marketing"],
-    },
-    {
-      title: "Case Study: SaaS Growth Hacking",
-      img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80",
-      summary: "A real-world example of how a SaaS company scaled rapidly.",
-      category: ["Case Study"],
-    },
-    {
-      title: "The Future of Product Design",
-      img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
-      summary: "Exploring trends and innovations in product design.",
-      category: ["Product"],
-    },
-    {
-      title: "Tech Stack Essentials for Startups",
-      img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-      summary: "Choosing the right technology stack for your startup success.",
-      category: ["Tech"],
-    },
-  ];
+
   const [blogs, setBlogs] = useState<
     {
+      id: string;
       title: string;
       img: string;
       summary: string;
@@ -186,6 +198,24 @@ export default function BlogPage() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/blogs");
+        const data = await res.json();
+        setBlogs(data);
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -211,12 +241,77 @@ export default function BlogPage() {
     });
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBlogs([{ ...newBlog }, ...blogs]);
-    setShowCreate(false);
-    setNewBlog({ title: "", img: "", summary: "", category: ["Finance"] });
-    setImagePreview(""); // Clear preview on publish
+
+    if (!newBlog.title || !newBlog.summary || (!imageFile && !isEditing)) {
+      toast.error("Please fill all required fields and select an image.");
+      return;
+    }
+
+    try {
+      if (isEditing && editingBlogId) {
+        // 🔄 UPDATE logic
+        const res = await fetch(`/api/blog/${editingBlogId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: newBlog.title,
+            summary: newBlog.summary,
+            category: newBlog.category,
+            img: newBlog.img, // You can change this based on your image handling logic
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          const updatedBlogs = blogs.map((b) =>
+            b.id === editingBlogId ? data : b
+          );
+          setBlogs(updatedBlogs);
+          toast.success("Blog updated!");
+        } else {
+          toast.error(data.error || "Update failed.");
+        }
+      } else {
+        // ➕ CREATE logic
+        const formData = new FormData();
+        formData.append("title", newBlog.title);
+        formData.append("summary", newBlog.summary);
+        formData.append("category", newBlog.category.join(","));
+        if (imageFile) {
+          formData.append("image", imageFile);
+        }
+
+        const res = await fetch("/api/create-blog", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          setBlogs([data, ...blogs]);
+          toast.success("Blog created successfully!");
+        } else {
+          toast.error(data.error || "Creation failed.");
+        }
+      }
+
+      // ✅ Reset form
+      setNewBlog({ title: "", summary: "", category: ["Finance"], img: "" });
+      setImagePreview("");
+      setImageFile(null);
+      setIsEditing(false);
+      setEditingBlogId(null);
+      setShowCreate(false);
+    } catch (err) {
+      console.error("Blog submit error:", err);
+      toast.error("Something went wrong.");
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -225,6 +320,7 @@ export default function BlogPage() {
       const url = URL.createObjectURL(file);
       setImagePreview(url);
       setNewBlog({ ...newBlog, img: url });
+      setImageFile(file);
     }
   };
 
@@ -241,6 +337,43 @@ export default function BlogPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleEdit = (blogId: string) => {
+    const blogToEdit = blogs.find((b) => b.id === blogId);
+    if (!blogToEdit) return;
+
+    setNewBlog({
+      title: blogToEdit.title,
+      summary: blogToEdit.summary,
+      category: blogToEdit.category,
+      img: blogToEdit.img,
+    });
+
+    setImagePreview(blogToEdit.img);
+    setEditingBlogId(blogId);
+    setIsEditing(true);
+    setShowCreate(true); // show the form
+
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  };
+
+  const handleDelete = async (id: string) => {
+    const confirmDelete = confirm("Are you sure you want to delete?");
+    if (!confirmDelete) return;
+
+    const res = await fetch(`/api/blog/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      toast.success("Blog deleted");
+      setBlogs((prev) => prev.filter((b) => b.id !== id));
+    } else {
+      toast.error("Failed to delete blog");
+    }
+  };
 
   return (
     <div
@@ -448,434 +581,425 @@ export default function BlogPage() {
           </div>
         </section>
         {/* --- BLOG CARDS SECTION --- */}
-        <section
-          style={{
-            width: "100%",
-            background: "linear-gradient(135deg, #fff 60%, #f6f3ff 100%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "32px 0 64px 0",
-          }}
-        >
-          <div
-            className="blog-header-row"
+        <div ref={formRef}>
+          <section
             style={{
-              width: "90%",
-              maxWidth: 1400,
+              width: "100%",
+              background: "linear-gradient(135deg, #fff 60%, #f6f3ff 100%)",
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 32,
+              padding: "32px 0 64px 0",
             }}
           >
-            <h2
-              style={{
-                fontSize: 48,
-                fontWeight: 800,
-                color: "#313053",
-                margin: 0,
-              }}
-            >
-              All <span style={{ color: "#8C5BFF" }}>Blog Posts</span>
-            </h2>
             <div
-              className="blog-header-controls"
-              style={{ display: "flex", alignItems: "center", gap: 12 }}
-            >
-              <span style={{ color: "#4c3c4c", fontSize: 22 }}>
-                🔽 Sort By :
-              </span>
-              <select
-                style={{
-                  background: "#8C5BFF",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 12,
-                  fontSize: 20,
-                  fontWeight: 500,
-                  padding: "12px 32px",
-                  boxShadow: "0 2px 8px #8C5BFF22",
-                  outline: "none",
-                  cursor: "pointer",
-                  minWidth: 180,
-                }}
-                defaultValue="Category One"
-              >
-                <option>Category One</option>
-                <option>Category Two</option>
-                <option>Category Three</option>
-              </select>
-              <button
-                style={{
-                  background: "#8C5BFF",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 12,
-                  fontSize: 20,
-                  fontWeight: 600,
-                  padding: "12px 32px",
-                  boxShadow: "0 2px 8px #8C5BFF22",
-                  cursor: "pointer",
-                  marginLeft: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                }}
-                onClick={() => setShowCreate((v) => !v)}
-              >
-                ➕ Create New Blog
-              </button>
-            </div>
-          </div>
-          {showCreate && (
-            <form
-              onSubmit={handleCreate}
+              className="blog-header-row"
               style={{
-                width: "100%",
-                maxWidth: 600,
-                margin: "0 auto 32px auto",
-                background: "#f6f3ff",
-                borderRadius: 24,
-                boxShadow: "0 4px 24px #e6e0fa33",
-                padding: 32,
+                width: "90%",
+                maxWidth: 1400,
                 display: "flex",
-                flexDirection: "column",
-                gap: 18,
                 alignItems: "center",
-                position: "relative",
+                justifyContent: "space-between",
+                marginBottom: 32,
               }}
             >
-              <button
-                type="button"
-                onClick={() => setShowCreate(false)}
+              <h2
                 style={{
-                  position: "absolute",
-                  top: 18,
-                  right: 18,
-                  background: "#ede7ff",
-                  border: "1.5px solid #b9aaff",
-                  borderRadius: "50%",
-                  width: 36,
-                  height: 36,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 22,
-                  color: "#8C5BFF",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 8px #e6e0fa22",
-                  zIndex: 2,
-                }}
-                aria-label="Close"
-              >
-                ×
-              </button>
-              <h3
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  color: "#8C5BFF",
+                  fontSize: 48,
+                  fontWeight: 800,
+                  color: "#313053",
                   margin: 0,
                 }}
               >
-                Create New Blog
-              </h3>
-              <input
-                name="title"
-                value={newBlog.title}
-                onChange={handleInput}
-                placeholder="Blog Title"
-                required
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  fontSize: 18,
-                  borderRadius: 8,
-                  border: "1.5px solid #b9aaff",
-                  background: "#f6f3ff",
-                }}
-              />
-              {/* Image file input and preview */}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  fontSize: 18,
-                  borderRadius: 8,
-                  border: "1.5px solid #b9aaff",
-                  background: "#f6f3ff",
-                  color: "#313053",
-                  boxSizing: "border-box",
-                }}
-              />
-              {imagePreview && (
-                <div
+                All <span style={{ color: "#8C5BFF" }}>Blog Posts</span>
+              </h2>
+              <div
+                className="blog-header-controls"
+                style={{ display: "flex", alignItems: "center", gap: 12 }}
+              >
+                <span style={{ color: "#4c3c4c", fontSize: 22 }}>
+                  🔽 Sort By :
+                </span>
+                <select
                   style={{
-                    width: "100%",
-                    height: 240,
-                    background: "#fff",
+                    background: "#8C5BFF",
+                    color: "#fff",
+                    border: "none",
                     borderRadius: 12,
-                    margin: "8px 0",
+                    fontSize: 20,
+                    fontWeight: 500,
+                    padding: "12px 32px",
+                    boxShadow: "0 2px 8px #8C5BFF22",
+                    outline: "none",
+                    cursor: "pointer",
+                    minWidth: 180,
+                  }}
+                  defaultValue="Category One"
+                >
+                  <option>Category One</option>
+                  <option>Category Two</option>
+                  <option>Category Three</option>
+                </select>
+                <button
+                  style={{
+                    background: "#8C5BFF",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 12,
+                    fontSize: 20,
+                    fontWeight: 600,
+                    padding: "12px 32px",
+                    boxShadow: "0 2px 8px #8C5BFF22",
+                    cursor: "pointer",
+                    marginLeft: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                  onClick={() => setShowCreate((v) => !v)}
+                >
+                  ➕ Create New Blog
+                </button>
+              </div>
+            </div>
+
+            {showCreate && (
+              <form
+                onSubmit={handleSubmit}
+                style={{
+                  width: "100%",
+                  maxWidth: 600,
+                  margin: "0 auto 32px auto",
+                  background: "#f6f3ff",
+                  borderRadius: 24,
+                  boxShadow: "0 4px 24px #e6e0fa33",
+                  padding: 32,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 18,
+                  alignItems: "center",
+                  position: "relative",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(false)}
+                  style={{
+                    position: "absolute",
+                    top: 18,
+                    right: 18,
+                    background: "#ede7ff",
+                    border: "1.5px solid #b9aaff",
+                    borderRadius: "50%",
+                    width: 36,
+                    height: 36,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    border: "1.5px solid #b9aaff",
+                    fontSize: 22,
+                    color: "#8C5BFF",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 8px #e6e0fa22",
+                    zIndex: 2,
+                  }}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+                <h3
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 700,
+                    color: "#8C5BFF",
+                    margin: 0,
                   }}
                 >
+                  {isEditing ? "Update the Blog" : "Create New Blog"}
+                </h3>
+                <input
+                  name="title"
+                  value={newBlog.title}
+                  onChange={handleInput}
+                  placeholder="Blog Title"
+                  required
+                  style={{
+                    width: "100%",
+                    padding: 12,
+                    fontSize: 18,
+                    borderRadius: 8,
+                    border: "1.5px solid #b9aaff",
+                    background: "#f6f3ff",
+                  }}
+                />
+                {/* Image file input and preview */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{
+                    width: "100%",
+                    padding: 8,
+                    fontSize: 16,
+                    borderRadius: 8,
+                    border: "1.5px solid #b9aaff",
+                    background: "#fff",
+                  }}
+                />
+                {imagePreview && (
                   <Image
                     src={imagePreview}
                     alt="Preview"
-                    width={240}
-                    height={240}
+                    width={180}
+                    height={120}
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      borderRadius: 10,
-                      background: "transparent",
+                      objectFit: "cover",
+                      borderRadius: 12,
+                      margin: "8px 0",
                     }}
                   />
-                </div>
-              )}
-              {/* End image file input and preview */}
-              {/* Custom Multi-Select Category UI */}
-              <div
-                ref={categoryRef}
-                style={{
-                  width: "100%",
-                  position: "relative",
-                  background: "#f6f3ff",
-                  border: "1.5px solid #b9aaff",
-                  borderRadius: 8,
-                  minHeight: 48,
-                  padding: "6px 12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                  gap: 6,
-                }}
-                onClick={() => setShowCategoryDropdown((v) => !v)}
-              >
-                {newBlog.category.length === 0 && (
-                  <span style={{ color: "#b9aaff", fontSize: 18 }}>
-                    Select categories...
-                  </span>
                 )}
-                {newBlog.category.map((cat) => (
-                  <span
-                    key={cat}
-                    style={{
-                      background: "#e6e0fa",
-                      color: "#8C5BFF",
-                      borderRadius: 8,
-                      padding: "4px 10px 4px 14px",
-                      fontWeight: 600,
-                      fontSize: 15,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
-                    {cat}
+                {/* End image file input and preview */}
+                {/* Custom Multi-Select Category UI */}
+                <div
+                  ref={categoryRef}
+                  style={{
+                    width: "100%",
+                    position: "relative",
+                    background: "#f6f3ff",
+                    border: "1.5px solid #b9aaff",
+                    borderRadius: 8,
+                    minHeight: 48,
+                    padding: "6px 12px",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                  onClick={() => setShowCategoryDropdown((v) => !v)}
+                >
+                  {newBlog.category.length === 0 && (
+                    <span style={{ color: "#b9aaff", fontSize: 18 }}>
+                      Select categories...
+                    </span>
+                  )}
+                  {newBlog.category?.map((cat) => (
                     <span
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveCategory(cat);
-                      }}
+                      key={cat}
                       style={{
-                        marginLeft: 4,
+                        background: "#e6e0fa",
                         color: "#8C5BFF",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        fontSize: 16,
-                        padding: "0 2px",
+                        borderRadius: 8,
+                        padding: "4px 10px 4px 14px",
+                        fontWeight: 600,
+                        fontSize: 15,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
                       }}
                     >
-                      ×
-                    </span>
-                  </span>
-                ))}
-                <span style={{ flex: 1 }} />
-                <span
-                  style={{ color: "#b9aaff", fontSize: 18, marginRight: 4 }}
-                >
-                  ▼
-                </span>
-                {showCategoryDropdown && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: 48,
-                      width: "100%",
-                      background: "#f6f3ff",
-                      border: "1.5px solid #b9aaff",
-                      borderRadius: 8,
-                      boxShadow: "0 4px 24px #e6e0fa33",
-                      zIndex: 10,
-                      padding: 6,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 4,
-                    }}
-                  >
-                    {[
-                      "Finance",
-                      "Website",
-                      "Case Study",
-                      "Marketing",
-                      "Product",
-                      "Tech",
-                      "Other",
-                    ].map((cat) => (
-                      <div
-                        key={cat}
+                      {cat}
+                      <span
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCategorySelect(cat);
+                          handleRemoveCategory(cat);
                         }}
                         style={{
-                          padding: "8px 12px",
-                          borderRadius: 6,
-                          background: newBlog.category.includes(cat)
-                            ? "#8C5BFF22"
-                            : "transparent",
-                          color: newBlog.category.includes(cat)
-                            ? "#8C5BFF"
-                            : "#313053",
-                          fontWeight: 500,
-                          fontSize: 17,
+                          marginLeft: 4,
+                          color: "#8C5BFF",
+                          fontWeight: 700,
                           cursor: "pointer",
-                          transition: "background 0.2s",
+                          fontSize: 16,
+                          padding: "0 2px",
                         }}
                       >
-                        {cat}
-                        {newBlog.category.includes(cat) && (
-                          <span style={{ marginLeft: 8, fontWeight: 700 }}>
-                            ✓
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                        ×
+                      </span>
+                    </span>
+                  ))}
+                  <span style={{ flex: 1 }} />
+                  <span
+                    style={{ color: "#b9aaff", fontSize: 18, marginRight: 4 }}
+                  >
+                    ▼
+                  </span>
+                  {showCategoryDropdown && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 48,
+                        width: "100%",
+                        background: "#f6f3ff",
+                        border: "1.5px solid #b9aaff",
+                        borderRadius: 8,
+                        boxShadow: "0 4px 24px #e6e0fa33",
+                        zIndex: 10,
+                        padding: 6,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 4,
+                      }}
+                    >
+                      {[
+                        "Finance",
+                        "Website",
+                        "Case Study",
+                        "Marketing",
+                        "Product",
+                        "Tech",
+                        "Other",
+                      ].map((cat) => (
+                        <div
+                          key={cat}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCategorySelect(cat);
+                          }}
+                          style={{
+                            padding: "8px 12px",
+                            borderRadius: 6,
+                            background: newBlog.category.includes(cat)
+                              ? "#8C5BFF22"
+                              : "transparent",
+                            color: newBlog.category.includes(cat)
+                              ? "#8C5BFF"
+                              : "#313053",
+                            fontWeight: 500,
+                            fontSize: 17,
+                            cursor: "pointer",
+                            transition: "background 0.2s",
+                          }}
+                        >
+                          {cat}
+                          {newBlog.category.includes(cat) && (
+                            <span style={{ marginLeft: 8, fontWeight: 700 }}>
+                              ✓
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* End Custom Multi-Select Category UI */}
+                <textarea
+                  name="summary"
+                  value={newBlog.summary}
+                  onChange={handleInput}
+                  placeholder="Short Summary"
+                  required
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: 12,
+                    fontSize: 18,
+                    borderRadius: 8,
+                    border: "1.5px solid #b9aaff",
+                    background: "#f6f3ff",
+                  }}
+                />
+                <button
+                  type="submit"
+                  style={{
+                    background: "#8C5BFF",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 10,
+                    fontSize: 20,
+                    fontWeight: 600,
+                    padding: "12px 40px",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 8px #8C5BFF22",
+                    marginTop: 8,
+                  }}
+                >
+                  {isEditing ? "Update Blog" : "Publish Blog"}
+                </button>
+              </form>
+            )}
+
+            <div
+              style={{
+                width: "90%",
+                maxWidth: 1400,
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+                gap: 32,
+                justifyItems: "center",
+                alignItems: "stretch",
+              }}
+            >
+              <div className="flex flex-wrap justify-center gap-6">
+                {blogs.map((blog) => (
+                  <BlogCard
+                    key={blog.id} // ✅ use blog.id instead of idx
+                    id={blog.id} // ✅ pass id as a prop  `
+                    img={blog.img}
+                    title={blog.title}
+                    summary={blog.summary}
+                    category={blog.category}
+                    onEdit={() => handleEdit(blog.id)}
+                    onDelete={() => handleDelete(blog.id)}
+                  />
+                ))}
               </div>
-              {/* End Custom Multi-Select Category UI */}
-              <textarea
-                name="summary"
-                value={newBlog.summary}
-                onChange={handleInput}
-                placeholder="Short Summary"
-                required
-                rows={3}
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  fontSize: 18,
-                  borderRadius: 8,
-                  border: "1.5px solid #b9aaff",
-                  background: "#f6f3ff",
-                }}
-              />
+            </div>
+            {/* Second row of blog cards */}
+            <div
+              style={{
+                width: "90%",
+                maxWidth: 1400,
+                display: "flex",
+                gap: 32,
+                flexWrap: "wrap",
+                justifyContent: "flex-start",
+                marginTop: 0,
+              }}
+            >
+              {/* Blog cards are now rendered from blogs state above */}
+            </div>
+            {/* Load More Button */}
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 24,
+              }}
+            >
               <button
-                type="submit"
                 style={{
                   background: "#8C5BFF",
                   color: "#fff",
                   border: "none",
-                  borderRadius: 10,
-                  fontSize: 20,
+                  borderRadius: 16,
+                  fontSize: 24,
                   fontWeight: 600,
-                  padding: "12px 40px",
-                  cursor: "pointer",
+                  padding: "18px 80px",
                   boxShadow: "0 2px 8px #8C5BFF22",
-                  marginTop: 8,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  transition: "background 0.2s",
                 }}
               >
-                Publish Blog
+                Load More{" "}
+                <span
+                  style={{
+                    fontSize: 28,
+                    display: "inline-block",
+                    transform: "translateY(2px)",
+                  }}
+                >
+                  ↗
+                </span>
               </button>
-            </form>
-          )}
-          <div
-            style={{
-              width: "90%",
-              maxWidth: 1400,
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-              gap: 32,
-              justifyItems: "center",
-              alignItems: "stretch",
-            }}
-          >
-            {blogs.concat(defaultBlogs).map((blog, idx) => (
-              <BlogCard
-                key={idx}
-                img={blog.img}
-                title={blog.title}
-                summary={blog.summary}
-                category={blog.category}
-              />
-            ))}
-          </div>
-          {/* Second row of blog cards */}
-          <div
-            style={{
-              width: "90%",
-              maxWidth: 1400,
-              display: "flex",
-              gap: 32,
-              flexWrap: "wrap",
-              justifyContent: "flex-start",
-              marginTop: 0,
-            }}
-          >
-            {/* Blog cards are now rendered from blogs state above */}
-          </div>
-          {/* Load More Button */}
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              marginTop: 24,
-            }}
-          >
-            <button
-              style={{
-                background: "#8C5BFF",
-                color: "#fff",
-                border: "none",
-                borderRadius: 16,
-                fontSize: 24,
-                fontWeight: 600,
-                padding: "18px 80px",
-                boxShadow: "0 2px 8px #8C5BFF22",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                transition: "background 0.2s",
-              }}
-            >
-              Load More{" "}
-              <span
-                style={{
-                  fontSize: 28,
-                  display: "inline-block",
-                  transform: "translateY(2px)",
-                }}
-              >
-                ↗
-              </span>
-            </button>
-          </div>
-        </section>
-        {/* --- NEWSLETTER SECTION --- */}
+            </div>
+          </section>
+        </div>
+
         <section
           style={{
             width: "100%",

@@ -67,7 +67,7 @@ const SignIn = () => {
         <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 sm:space-y-6" autoComplete="on">
           <div className="text-center md:text-left">
             <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">Sign In to your Account</h1>
-            <p className="text-xs sm:text-sm text-gray-600 font-semibold">Don't have an account?{" "}
+            <p className="text-xs sm:text-sm text-gray-600 font-semibold">Don&apos;t have an account?{" "}
               <button type="button" onClick={() => router.push("/auth/signup")} className="text-[#6356D7] hover:underline font-semibold">Sign Up here.</button>
             </p>
           </div>

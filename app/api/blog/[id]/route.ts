@@ -1,11 +1,14 @@
 import { prisma } from "@/app/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
+export async function DELETE(req: Request) {
+  // Extract id from the URL
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  if (!id) {
+    return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
+  }
 
   try {
     await prisma.blog.delete({ where: { id } });
@@ -15,11 +18,15 @@ export async function DELETE(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
+export async function PUT(req: Request) {
+  // Extract id from the URL
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  if (!id) {
+    return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
+  }
+
   const data = await req.json();
 
   try {
@@ -41,11 +48,14 @@ export async function PUT(
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
+export async function GET(req: Request) {
+  // Extract id from the URL
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  if (!id) {
+    return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
+  }
 
   try {
     const blog = await prisma.blog.findUnique({

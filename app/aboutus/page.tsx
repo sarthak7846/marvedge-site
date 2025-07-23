@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import toast from "react-hot-toast";
@@ -51,7 +51,7 @@ function ContactFormSection() {
     >
       <form
         className="w-[90%] max-w-[900px] bg-gradient-radial-ellipse-60-40 rounded-[32px] shadow-[0_4px_32px_#e6e0fa33] p-12 flex flex-col items-center"
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={handleSubmit}
       >
         <div className="text-[40px] font-extrabold text-[#3c3450] mb-2 text-center">
           Get In <span className="text-[#8C5BFF]">Touch</span>
@@ -148,166 +148,6 @@ function ContactFormSection() {
         </button>
       </form>
     </section>
-  );
-}
-
-const teamMembers = [
-  {
-    name: "Joyce Wallin",
-    role: "Specialised Support",
-    img: "https://randomuser.me/api/portraits/men/32.jpg",
-  },
-  {
-    name: "Ajit Kumar Shankhwar",
-    role: "Frontend Developer",
-    img: "/images/Ajit.jpg",
-  },
-  {
-    name: "Ashish Kumar Mishra",
-    role: "Full Stack Developer",
-    img: "/images/Ashish.jpg",
-  },
-  {
-    name: "Carlos Rivera",
-    role: "Backend Engineer",
-    img: "https://randomuser.me/api/portraits/men/85.jpg",
-  },
-  {
-    name: "Lina Chen",
-    role: "Marketing Lead",
-    img: "https://randomuser.me/api/portraits/women/12.jpg",
-  },
-];
-
-function TeamCarousel() {
-  const [centerIdx, setCenterIdx] = useState(2);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCenterIdx((prev) => (prev + 1) % teamMembers.length);
-    }, 2200);
-    return () => clearInterval(interval);
-  }, []);
-
-  const getIdx = (offset: number) =>
-    (centerIdx + offset + teamMembers.length) % teamMembers.length;
-
-  return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: 1500,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-end",
-        gap: 56,
-        position: "relative",
-        height: 450,
-        margin: "40px auto 24px auto",
-        overflowX: "auto",
-        padding: "0 0 24px 0",
-      }}
-    >
-      {[-2, -1, 0, 1, 2].map((offset: number) => {
-        const idx = getIdx(offset);
-        const member = teamMembers[idx];
-        const isCenter = offset === 0;
-        return (
-          <div
-            key={idx}
-            style={{
-              position: "relative",
-              zIndex: isCenter ? 2 : 1,
-              transition: "all 0.5s cubic-bezier(.4,2,.6,1)",
-              transform: isCenter
-                ? "scale(1.18) translateY(-18px)"
-                : offset === -1 || offset === 1
-                ? "scale(0.92) translateY(10px)"
-                : "scale(0.8) translateY(30px)",
-              filter: isCenter ? "none" : "grayscale(0.5)",
-              opacity: isCenter ? 1 : 0.7,
-              boxShadow: isCenter
-                ? "0 8px 32px #8C5BFF33"
-                : "0 2px 8px #e6e0fa33",
-              borderRadius: 24,
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              background: "#f6f3ff",
-              padding: 0,
-              margin: 0,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              minWidth: 180,
-              maxWidth: 320,
-              width: "auto",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "transparent",
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-                padding: 0,
-                minHeight: 180,
-                maxHeight: 320,
-                overflow: "hidden",
-              }}
-            >
-              <Image
-                src={member.img}
-                alt={member.name}
-                width={isCenter ? 220 : 140}
-                height={isCenter ? 300 : 200}
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: isCenter ? 300 : 200,
-                  objectFit: "contain",
-                  height: "auto",
-                  transition:
-                    "filter 0.5s, transform 0.5s, max-width 0.5s, max-height 0.5s",
-                  background: "transparent",
-                  display: "block",
-                  margin: "auto",
-                }}
-                unoptimized
-              />
-            </div>
-            <div
-              style={{
-                background: "#8C5BFF",
-                color: "#fff",
-                width: "100%",
-                padding: "20px 0 14px 0",
-                textAlign: "center",
-                fontWeight: 700,
-                fontSize: 22,
-                letterSpacing: 0.2,
-                borderBottomLeftRadius: 24,
-                borderBottomRightRadius: 24,
-              }}
-            >
-              {member.name}
-              <div
-                style={{
-                  fontWeight: 400,
-                  fontSize: 16,
-                  color: "#e6e0fa",
-                  marginTop: 4,
-                }}
-              >
-                {member.role}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
   );
 }
 

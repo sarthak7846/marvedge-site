@@ -4,11 +4,9 @@ import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import React, { useState, useRef, useEffect } from "react";
-import { prisma } from "@/app/lib/prisma";
 import { toast } from "react-hot-toast";
 
 function BlogCard({
-  id,
   img,
   title,
   summary,
@@ -17,7 +15,6 @@ function BlogCard({
   onDelete,
   canEdit,
 }: {
-  id: string;
   img: string;
   title: string;
   summary: string;
@@ -27,10 +24,15 @@ function BlogCard({
   canEdit?: boolean;
 }) {
   return (
-    <div className="bg-gradient-to-br from-white via-[#f6f3ff] to-[#ede7ff] border border-[#e6e0fa] rounded-[32px] shadow-2xl w-[420px] min-h-[480px] p-7 flex flex-col mb-8 transition-all duration-300 hover:shadow-[0_16px_48px_#b9aaff55] hover:border-[#b9aaff] hover:-translate-y-2 hover:scale-[1.035]">
-      <img
+    <div
+      className="bg-gradient-to-br from-white via-[#f6f3ff] to-[#ede7ff] border border-[#e6e0fa] rounded-[32px] shadow-2xl w-[420px] min-h-[480px] max-h-[480px] p-7 flex flex-col mb-8 transition-all duration-300 hover:shadow-[0_16px_48px_#b9aaff55] hover:border-[#b9aaff] hover:-translate-y-2 hover:scale-[1.035]"
+      style={{ height: "480px" }}
+    >
+      <Image
         src={img}
         alt="Blog"
+        width={400}
+        height={180}
         className="rounded-[22px] object-cover w-full h-[180px] mb-5"
         style={{ aspectRatio: "16/9" }}
       />
@@ -53,65 +55,77 @@ function BlogCard({
         </svg>
         <span>5 min read</span>
       </div>
-      <h3 className="text-[24px] font-bold text-[#3d2966] leading-tight mb-1">
-        {title}
-      </h3>
-      <p className="text-[#6d6a7c] text-[17px] mb-4">{summary}</p>
-      <div className="flex gap-2 flex-wrap mb-4">
-        {category.map((cat, i) => (
-          <span
-            key={i}
-            className="bg-[#e6e0fa] text-[#9066F9] rounded-[12px] px-4 py-1 font-semibold text-[15px] w-fit shadow-sm"
-          >
-            {cat}
-          </span>
-        ))}
-      </div>
-      <h3
-        style={{ fontSize: 26, fontWeight: 700, color: "#4c3c4c", margin: 0 }}
+      <div
+        style={{
+          overflowY: "auto", // Only show scrollbar when needed
+          flex: 1,
+          minHeight: 0,
+          marginBottom: "1rem",
+          scrollbarWidth: "thin",
+          scrollbarColor: "#8C5BFF #f6f3ff",
+        }}
+        className="blogcard-scrollbar"
       >
-        {title}
-      </h3>
-      <p style={{ color: "#6d6a7c", fontSize: 18, margin: "10px 0 16px 0" }}>
-        {summary}
-      </p>
-      <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
-        <span
-          style={{
-            background: "#e6e0fa",
-            color: "#8C5BFF",
-            borderRadius: 8,
-            padding: "4px 14px",
-            fontWeight: 600,
-            fontSize: 15,
-          }}
+        <h3 className="text-[24px] font-bold text-[#3d2966] leading-tight mb-1">
+          {title}
+        </h3>
+        <p className="text-[#6d6a7c] text-[17px] mb-4">{summary}</p>
+        <div className="flex gap-2 flex-wrap mb-4">
+          {category.map((cat, i) => (
+            <span
+              key={i}
+              className="bg-[#e6e0fa] text-[#9066F9] rounded-[12px] px-4 py-1 font-semibold text-[15px] w-fit shadow-sm"
+            >
+              {cat}
+            </span>
+          ))}
+        </div>
+        <h3
+          style={{ fontSize: 26, fontWeight: 700, color: "#4c3c4c", margin: 0 }}
         >
-          Finance
-        </span>
-        <span
-          style={{
-            background: "#e6e0fa",
-            color: "#8C5BFF",
-            borderRadius: 8,
-            padding: "4px 14px",
-            fontWeight: 600,
-            fontSize: 15,
-          }}
-        >
-          Website
-        </span>
-        <span
-          style={{
-            background: "#e6e0fa",
-            color: "#8C5BFF",
-            borderRadius: 8,
-            padding: "4px 14px",
-            fontWeight: 600,
-            fontSize: 15,
-          }}
-        >
-          Case Study
-        </span>
+          {title}
+        </h3>
+        <p style={{ color: "#6d6a7c", fontSize: 18, margin: "10px 0 16px 0" }}>
+          {summary}
+        </p>
+        <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
+          <span
+            style={{
+              background: "#e6e0fa",
+              color: "#8C5BFF",
+              borderRadius: 8,
+              padding: "4px 14px",
+              fontWeight: 600,
+              fontSize: 15,
+            }}
+          >
+            Finance
+          </span>
+          <span
+            style={{
+              background: "#e6e0fa",
+              color: "#8C5BFF",
+              borderRadius: 8,
+              padding: "4px 14px",
+              fontWeight: 600,
+              fontSize: 15,
+            }}
+          >
+            Website
+          </span>
+          <span
+            style={{
+              background: "#e6e0fa",
+              color: "#8C5BFF",
+              borderRadius: 8,
+              padding: "4px 14px",
+              fontWeight: 600,
+              fontSize: 15,
+            }}
+          >
+            Case Study
+          </span>
+        </div>
       </div>
 
       {/* Learn More + Buttons */}
@@ -189,51 +203,6 @@ export default function BlogPage() {
     "All",
   ]); // State for selected filter categories
   const [showAll, setShowAll] = useState(false); // State to control if all blogs are shown after Load More
-  const defaultBlogs = [
-    {
-      id: "default-1",
-      title: "The Importance of Blogging for Business",
-      img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
-      summary: "Discover how blogging can boost your business growth.",
-      category: ["Finance"],
-    },
-    {
-      id: "default-2",
-      title: "10 Tips for Successful Blogging",
-      img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
-      summary: "Learn how to create engaging blog content that drives traffic.",
-      category: ["Website"],
-    },
-    {
-      id: "default-3",
-      title: "How to Build a Personal Brand Online",
-      img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
-      summary:
-        "Tips and tricks for building your personal brand in the digital age.",
-      category: ["Marketing"],
-    },
-    {
-      id: "default-4",
-      title: "Case Study: SaaS Growth Hacking",
-      img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80",
-      summary: "A real-world example of how a SaaS company scaled rapidly.",
-      category: ["Case Study"],
-    },
-    {
-      id: "default-5",
-      title: "The Future of Product Design",
-      img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
-      summary: "Exploring trends and innovations in product design.",
-      category: ["Product"],
-    },
-    {
-      id: "default-6",
-      title: "Tech Stack Essentials for Startups",
-      img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-      summary: "Choosing the right technology stack for your startup success.",
-      category: ["Tech"],
-    },
-  ];
   const [blogs, setBlogs] = useState<
     {
       id: string;
@@ -252,7 +221,6 @@ export default function BlogPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
-  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -375,48 +343,13 @@ export default function BlogPage() {
     }
   };
 
-  // All blogs (from backend and default)
-  const allBlogs = blogs.concat(defaultBlogs);
-
-  // Filtered blogs based on selected category
+  // For filtering and displaying, use blogs directly:
   const filteredBlogs = selectedCategories.includes("All")
-    ? allBlogs
-    : allBlogs.filter((blog) =>
+    ? blogs
+    : blogs.filter((blog) =>
         blog.category.some((cat) => selectedCategories.includes(cat))
       );
-
-  // Blogs to display: filtered by default, all after Load More
-  const blogsToDisplay = showAll ? allBlogs : filteredBlogs;
-
-  // Logic for sorted/featured blog and the rest
-  let featuredBlog = null;
-  let otherBlogs: typeof filteredBlogs = [];
-  if (selectedCategories.length === 1 && selectedCategories[0] !== "All") {
-    featuredBlog = filteredBlogs[0];
-  }
-  // All blogs (from all categories)
-  const allOtherBlogs = featuredBlog
-    ? allBlogs.filter(
-        (blog) =>
-          blog.title !== featuredBlog.title ||
-          blog.summary !== featuredBlog.summary ||
-          blog.img !== featuredBlog.img
-      )
-    : allBlogs;
-
-  // Handler for sort change
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    if (selectedOptions.includes("All")) {
-      setSelectedCategories(["All"]);
-    } else {
-      setSelectedCategories(selectedOptions);
-    }
-    setShowAll(false); // Reset to only show featured blog
-  };
+  const blogsToDisplay = showAll ? blogs : filteredBlogs;
 
   // Handler for Load More
   const handleLoadMore = () => {
@@ -478,14 +411,6 @@ export default function BlogPage() {
     }
     setShowAll(false);
   };
-  const handleRemoveSelected = (cat: string) => {
-    if (cat === "All") return;
-    const newSelected = selectedCategories.filter((c) => c !== cat);
-    setSelectedCategories(newSelected.length ? newSelected : ["All"]);
-  };
-
-  // Add this function to fix the error
-  const handleCreate = handleSubmit;
 
   // Available categories for both filter and blog creation
   const categories = [
@@ -505,6 +430,8 @@ export default function BlogPage() {
     "badal@marvedge.com",
     "ashish@marvedge.com",
     "kulkarniworkk@gmail.com",
+    "ajit@marvedge.com",
+    "sarthak@marvedge.com",
   ];
   const userEmail =
     typeof window !== "undefined"
@@ -700,7 +627,7 @@ export default function BlogPage() {
           </div>
           {canEdit && showCreate && (
             <form
-              onSubmit={handleCreate}
+              onSubmit={handleSubmit}
               className="w-full max-w-md mx-auto mb-12 bg-[#f6f3ff] rounded-[24px] shadow-[0_4px_24px_#e6e0fa33] p-12 flex flex-col gap-6 items-center relative"
             >
               <button
@@ -835,7 +762,6 @@ export default function BlogPage() {
             {blogsToDisplay.map((blog, idx) => (
               <BlogCard
                 key={idx}
-                id={blog.id}
                 img={blog.img}
                 title={blog.title}
                 summary={blog.summary}
@@ -1181,6 +1107,17 @@ export default function BlogPage() {
             font-size: 1rem !important;
             padding: 16px 10px !important;
           }
+        .blogcard-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          background: #f6f3ff;
+          border-radius: 8px;
+        }
+        .blogcard-scrollbar::-webkit-scrollbar-thumb {
+          background: #8C5BFF;
+          border-radius: 8px;
+        }
+        .blogcard-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #6A4EFF;
         }
       `}</style>
     </div>

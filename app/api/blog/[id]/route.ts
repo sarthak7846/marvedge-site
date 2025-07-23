@@ -2,7 +2,6 @@ import { prisma } from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function DELETE(req: Request) {
-  // Extract id from the URL
   const url = new URL(req.url);
   const id = url.pathname.split("/").pop();
 
@@ -19,7 +18,6 @@ export async function DELETE(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  // Extract id from the URL
   const url = new URL(req.url);
   const id = url.pathname.split("/").pop();
 
@@ -49,7 +47,6 @@ export async function PUT(req: Request) {
 }
 
 export async function GET(req: Request) {
-  // Extract id from the URL
   const url = new URL(req.url);
   const id = url.pathname.split("/").pop();
 

@@ -1,5 +1,7 @@
 "use client";
 import "./globals.css";
+import { usePathname } from "next/navigation";
+import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({
@@ -7,6 +9,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const showNavbar = !pathname.startsWith("/auth/");
   return (
     <html
       lang="en"
@@ -25,6 +29,8 @@ export default function RootLayout({
         `}</style>
       </head>
       <body className="overflow-x-hidden">
+        {showNavbar && <Navbar />}
+
         <Toaster position="top-right" />
         {children}
       </body>

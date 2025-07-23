@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -19,6 +19,48 @@ const NavButton: React.FC<{
 
 const Navbar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Read user name and email from localStorage
+    const storedName = localStorage.getItem("marvedgeUserName");
+    const storedEmail = localStorage.getItem("marvedgeUserEmail");
+    setUserName(storedName);
+    setUserEmail(storedEmail);
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showDropdown]);
+
+  function handleLogout() {
+    localStorage.removeItem("marvedgeUserName");
+    localStorage.removeItem("marvedgeUserEmail");
+    window.location.reload();
+  }
+
+  function getInitials(name: string | null): string {
+    if (!name) return "";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  const isLoggedIn = !!userName;
+  const userInitials = getInitials(userName);
   return (
     <>
       <nav className="fixed top-0 left-0 w-full z-[1002] bg-gradient-to-tr from-white via-[#f9fef4] to-[#e9f8c5] min-h-[60px] flex items-center">
@@ -42,6 +84,40 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center space-x-8 text-[#313053] font-medium">
             <NavButton href="/aboutus">About Us</NavButton>
             <NavButton href="/blog">Blog</NavButton>
+            {/* User initials or icon */}
+            <div className="ml-6 flex items-center">
+              {isLoggedIn ? (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    className="w-10 h-10 rounded-full bg-[#6356D7] text-white flex items-center justify-center text-lg font-bold shadow cursor-pointer border-4 border-white hover:scale-105 transition-all"
+                    onClick={() => setShowDropdown((v) => !v)}
+                    title={userName || undefined}
+                  >
+                    {userInitials}
+                  </button>
+                  {showDropdown && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg p-4 z-50 border border-gray-200 animate-fade-in">
+                      <div className="mb-2 text-base font-bold text-[#6356D7]">{userName}</div>
+                      <div className="mb-1 text-gray-700 text-xs font-semibold">{userEmail}</div>
+                      <button
+                        onClick={handleLogout}
+                        className="mt-3 w-full px-3 py-2 bg-[#6356D7] text-white rounded hover:bg-[#7E5FFF] font-semibold transition-all text-sm"
+                      >
+                        Log out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link href="/auth/signin">
+                  <div className="w-10 h-10 rounded-full bg-[#6356D7] text-white flex items-center justify-center text-lg font-bold shadow cursor-pointer border-4 border-white hover:scale-105 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118A7.5 7.5 0 0112 15.75a7.5 7.5 0 017.5 4.368" />
+                    </svg>
+                  </div>
+                </Link>
+              )}
+            </div>
           </div>
 
           <button
@@ -69,6 +145,22 @@ const Navbar: React.FC = () => {
                 Blog
               </button>
             </Link>
+            {/* User initials or icon for mobile */}
+            <div className="w-full flex justify-center mt-2">
+              {isLoggedIn ? (
+                <div className="w-10 h-10 rounded-full bg-[#6356D7] text-white flex items-center justify-center text-lg font-bold shadow cursor-pointer border-4 border-white hover:scale-105 transition-all">
+                  {userInitials}
+                </div>
+              ) : (
+                <Link href="/auth/signin" className="w-10 h-10">
+                  <div className="w-10 h-10 rounded-full bg-[#6356D7] text-white flex items-center justify-center text-lg font-bold shadow cursor-pointer border-4 border-white hover:scale-105 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118A7.5 7.5 0 0112 15.75a7.5 7.5 0 017.5 4.368" />
+                    </svg>
+                  </div>
+                </Link>
+              )}
+            </div>
           </div>
         )}
       </nav>

@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import toast from "react-hot-toast";
@@ -47,55 +47,19 @@ function ContactFormSection() {
   return (
     <section
       id="contact"
-      style={{
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        margin: "48px 0 0 0",
-      }}
+      className="w-full flex justify-center items-center mt-12"
     >
       <form
-        style={{
-          width: "90%",
-          maxWidth: 900,
-          background:
-            "radial-gradient(ellipse at 60% 40%, #ede7ff 0%, #f6f3ff 100%)",
-          borderRadius: 32,
-          boxShadow: "0 4px 32px #e6e0fa33",
-          padding: "48px 32px 40px 32px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+        className="w-[90%] max-w-[900px] bg-gradient-radial-ellipse-60-40 rounded-[32px] shadow-[0_4px_32px_#e6e0fa33] p-12 flex flex-col items-center"
         onSubmit={handleSubmit}
       >
-        <div
-          style={{
-            fontSize: 40,
-            fontWeight: 800,
-            color: "#3c3450",
-            marginBottom: 8,
-            textAlign: "center",
-          }}
-        >
-          Get In <span style={{ color: "#8C5BFF" }}>Touch</span>
+        <div className="text-[40px] font-extrabold text-[#3c3450] mb-2 text-center">
+          Get In <span className="text-[#8C5BFF]">Touch</span>
         </div>
-        <div
-          style={{
-            color: "#6d6a7c",
-            fontSize: 20,
-            fontWeight: 400,
-            marginBottom: 32,
-            textAlign: "center",
-          }}
-        >
+        <div className="text-[#6d6a7c] text-[20px] font-normal mb-8 text-center">
           Let&apos;s bring your ideas to life, reach out and say hello.
         </div>
-        <div
-          className="about-contact-names-row"
-          style={{ display: "flex", gap: 24, width: "100%", marginBottom: 18 }}
-        >
+        <div className="about-contact-names-row flex gap-6 w-full mb-4">
           <input
             type="text"
             placeholder="Enter your First Name"
@@ -164,19 +128,7 @@ function ContactFormSection() {
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           placeholder="Enter your phone number"
-          style={{
-            width: "100%",
-            padding: "16px 18px",
-            fontSize: 18,
-            borderRadius: 8,
-            border: "1.5px solid #b9aaff",
-            outline: "none",
-            background: "#fff",
-            color: "#313053",
-            fontWeight: 500,
-            marginBottom: 18,
-            transition: "border 0.2s",
-          }}
+          className="w-full px-4 py-4 text-[18px] rounded-[8px] border border-[#b9aaff] outline-none bg-white text-[#313053] font-medium mb-4 transition-colors duration-200"
         />
         <textarea
           placeholder="Enter your message"
@@ -186,36 +138,11 @@ function ContactFormSection() {
           }
           required
           rows={4}
-          style={{
-            width: "100%",
-            padding: "16px 18px",
-            fontSize: 18,
-            borderRadius: 8,
-            border: "1.5px solid #b9aaff",
-            outline: "none",
-            background: "#fff",
-            color: "#313053",
-            fontWeight: 500,
-            marginBottom: 28,
-            resize: "vertical",
-            transition: "border 0.2s",
-          }}
+          className="w-full px-4 py-4 text-[18px] rounded-[8px] border border-[#b9aaff] outline-none bg-white text-[#313053] font-medium mb-7 resize-y transition-colors duration-200"
         />
         <button
           type="submit"
-          style={{
-            width: "100%",
-            background: "#8C5BFF",
-            color: "#fff",
-            border: "none",
-            borderRadius: 10,
-            fontSize: 22,
-            fontWeight: 600,
-            padding: "14px 0",
-            cursor: "pointer",
-            boxShadow: "0 2px 8px #8C5BFF22",
-            transition: "background 0.2s",
-          }}
+          className="w-full bg-[#8C5BFF] text-white border-none rounded-[10px] text-[22px] font-semibold py-3 cursor-pointer shadow-[0_2px_8px_#8C5BFF22] transition-colors duration-200"
         >
           Send Message
         </button>
@@ -224,248 +151,28 @@ function ContactFormSection() {
   );
 }
 
-const teamMembers = [
-  {
-    name: "Joyce Wallin",
-    role: "Specialised Support",
-    img: "https://randomuser.me/api/portraits/men/32.jpg",
-  },
-  {
-    name: "Ajit Kumar Shankhwar",
-    role: "Frontend Developer",
-    img: "/images/Ajit.jpg",
-  },
-  {
-    name: "Ashish Kumar Mishra",
-    role: "Full Stack Developer",
-    img: "/images/Ashish.jpg",
-  },
-  {
-    name: "Carlos Rivera",
-    role: "Backend Engineer",
-    img: "https://randomuser.me/api/portraits/men/85.jpg",
-  },
-  {
-    name: "Lina Chen",
-    role: "Marketing Lead",
-    img: "https://randomuser.me/api/portraits/women/12.jpg",
-  },
-];
-
-function TeamCarousel() {
-  const [centerIdx, setCenterIdx] = useState(2);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCenterIdx((prev) => (prev + 1) % teamMembers.length);
-    }, 2200);
-    return () => clearInterval(interval);
-  }, []);
-
-  const getIdx = (offset: number) =>
-    (centerIdx + offset + teamMembers.length) % teamMembers.length;
-
-  return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: 1500,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-end",
-        gap: 56,
-        position: "relative",
-        height: 450,
-        margin: "40px auto 24px auto",
-        overflowX: "auto",
-        padding: "0 0 24px 0",
-      }}
-    >
-      {[-2, -1, 0, 1, 2].map((offset: number) => {
-        const idx = getIdx(offset);
-        const member = teamMembers[idx];
-        const isCenter = offset === 0;
-        return (
-          <div
-            key={idx}
-            style={{
-              position: "relative",
-              zIndex: isCenter ? 2 : 1,
-              transition: "all 0.5s cubic-bezier(.4,2,.6,1)",
-              transform: isCenter
-                ? "scale(1.18) translateY(-18px)"
-                : offset === -1 || offset === 1
-                ? "scale(0.92) translateY(10px)"
-                : "scale(0.8) translateY(30px)",
-              filter: isCenter ? "none" : "grayscale(0.5)",
-              opacity: isCenter ? 1 : 0.7,
-              boxShadow: isCenter
-                ? "0 8px 32px #8C5BFF33"
-                : "0 2px 8px #e6e0fa33",
-              borderRadius: 24,
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              background: "#f6f3ff",
-              padding: 0,
-              margin: 0,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              minWidth: 180,
-              maxWidth: 320,
-              width: "auto",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "transparent",
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-                padding: 0,
-                minHeight: 180,
-                maxHeight: 320,
-                overflow: "hidden",
-              }}
-            >
-              <Image
-                src={member.img}
-                alt={member.name}
-                width={isCenter ? 220 : 140}
-                height={isCenter ? 300 : 200}
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: isCenter ? 300 : 200,
-                  objectFit: "contain",
-                  height: "auto",
-                  transition:
-                    "filter 0.5s, transform 0.5s, max-width 0.5s, max-height 0.5s",
-                  background: "transparent",
-                  display: "block",
-                  margin: "auto",
-                }}
-                unoptimized
-              />
-            </div>
-            <div
-              style={{
-                background: "#8C5BFF",
-                color: "#fff",
-                width: "100%",
-                padding: "20px 0 14px 0",
-                textAlign: "center",
-                fontWeight: 700,
-                fontSize: 22,
-                letterSpacing: 0.2,
-                borderBottomLeftRadius: 24,
-                borderBottomRightRadius: 24,
-              }}
-            >
-              {member.name}
-              <div
-                style={{
-                  fontWeight: 400,
-                  fontSize: 16,
-                  color: "#e6e0fa",
-                  marginTop: 4,
-                }}
-              >
-                {member.role}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 export default function AboutUsPage() {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #fff 60%, #f6f3ff 100%)",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-white to-f6f3ff flex flex-col">
       <Navbar />
-      <section
-        style={{
-          width: "100%",
-          minHeight: "48vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "64px 0 32px 0",
-          background: "#FAFEF6",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            width: "100%",
-            maxWidth: 1100,
-            margin: "0 auto",
-          }}
-        >
-          <div
-            style={{
-              color: "#a18fff",
-              fontWeight: 700,
-              fontSize: 24,
-              marginBottom: 18,
-              marginTop: 48,
-            }}
-          >
+      <section className="w-full min-h-[48vh] flex flex-col items-center justify-center py-16 bg-[#FAFEF6] relative overflow-hidden">
+        <div className="text-center w-full max-w-[1100px] mx-auto">
+          <div className="text-[#a18fff] font-bold text-[24px] mb-3 mt-16">
             Discover Our Story
           </div>
-          <h1
-            style={{
-              fontSize: 56,
-              fontWeight: 800,
-              color: "#3c3450",
-              margin: 0,
-              lineHeight: 1.1,
-            }}
-          >
+          <h1 className="text-[56px] font-extrabold text-[#3c3450] leading-tight">
             We&apos;re Building the future of
             <br />
-            <span style={{ color: "#8C5BFF" }}>Digital Innovation</span>
+            <span className="text-[#8C5BFF]">Digital Innovation</span>
           </h1>
-          <div
-            style={{
-              margin: "38px 0 0 0",
-              color: "#6d6a7c",
-              fontSize: 22,
-              fontWeight: 400,
-            }}
-          >
+          <div className="text-[#6d6a7c] text-[22px] font-normal mt-5">
             Empowering every SaaS product to deliver an interactive demo in
             under 60 seconds 2D 2D
             <br />
             no developers, designers, or sales teams needed.
           </div>
         </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: 40,
-            height: 0,
-            zIndex: 0,
-            pointerEvents: "none",
-          }}
-        >
+        <div className="absolute left-0 right-0 bottom-16 h-0 z-0 pointer-events-none">
           <svg
             width="100%"
             height="32"
@@ -488,212 +195,69 @@ export default function AboutUsPage() {
           </svg>
         </div>
       </section>
-      <section
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          margin: "0 0 32px 0",
-        }}
-      >
-        <div
-          style={{
-            width: "90%",
-            maxWidth: 1300,
-            borderRadius: 24,
-            overflow: "hidden",
-            boxShadow: "0 4px 32px #e6e0fa33",
-            background: "#fff",
-          }}
-        >
+      <section className="w-full flex justify-center items-center mb-12">
+        <div className="w-[90%] max-w-[1300px] rounded-[24px] overflow-hidden shadow-[0_4px_32px_#e6e0fa33] bg-white">
           <Image
-            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80"
+            src="/images/aboutUS.jpg"
             alt="Team working on tablet"
             width={1300}
             height={650}
-            style={{ width: "100%", height: "auto", display: "block" }}
+            className="w-full h-auto block"
             priority
           />
         </div>
       </section>
-      <section
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "32px 0 0 0",
-        }}
-      >
-        <div
-          className="about-columns-row"
-          style={{
-            width: "90%",
-            maxWidth: 1400,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            gap: 32,
-            marginBottom: 64,
-          }}
-        >
-          <div style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
-            <div
-              style={{
-                fontSize: 38,
-                fontWeight: 700,
-                color: "#3c3450",
-                marginBottom: 8,
-              }}
-            >
-              Our <span style={{ color: "#8C5BFF" }}>Story</span>
+      <section className="w-full flex flex-col items-center justify-center py-12">
+        <div className="about-columns-row flex flex-row justify-between items-start gap-12 mb-24">
+          <div className="flex-1 text-center px-8">
+            <div className="text-[38px] font-bold text-[#3c3450] mb-2">
+              Our <span className="text-[#8C5BFF]">Story</span>
             </div>
-            <div
-              style={{
-                color: "#b3b3b3",
-                fontSize: 22,
-                fontWeight: 500,
-                marginBottom: 18,
-              }}
-            >
+            <div className="text-[#b3b3b3] text-[22px] font-medium mb-6">
               Why We Started it?
             </div>
-            <div
-              style={{
-                color: "#6d6a7c",
-                fontSize: 20,
-                fontWeight: 400,
-                lineHeight: 1.5,
-              }}
-            >
+            <div className="text-[#6d6a7c] text-[20px] font-normal leading-relaxed">
               We are an early-stage, fast-growing SaaS startup helping
               product-led teams{" "}
-              <span
-                style={{
-                  color: "#8C5BFF",
-                  fontWeight: 600,
-                  textDecoration: "underline",
-                }}
-              >
+              <span className="text-[#8C5BFF] font-semibold underline">
                 create interactive demos
               </span>{" "}
               for their tools,{" "}
-              <span
-                style={{
-                  color: "#8C5BFF",
-                  fontWeight: 600,
-                  textDecoration: "underline",
-                }}
-              >
+              <span className="text-[#8C5BFF] font-semibold underline">
                 without
               </span>{" "}
               writing a single line of code or a video editor.
             </div>
           </div>
-          <div
-            style={{
-              width: 2,
-              background: "linear-gradient(180deg, #ede7ff 0%, #8C5BFF22 100%)",
-              height: 180,
-              alignSelf: "center",
-              opacity: 0.4,
-              borderRadius: 1,
-            }}
-          />
-          <div style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
-            <div
-              style={{
-                fontSize: 38,
-                fontWeight: 700,
-                color: "#3c3450",
-                marginBottom: 8,
-              }}
-            >
-              Our <span style={{ color: "#8C5BFF" }}>Mission</span>
+          <div className="w-1 bg-gradient-to-b from-[#ede7ff] to-[#8C5BFF22] h-full self-center opacity-40 rounded-full" />
+          <div className="flex-1 text-center px-8">
+            <div className="text-[38px] font-bold text-[#3c3450] mb-2">
+              Our <span className="text-[#8C5BFF]">Mission</span>
             </div>
-            <div
-              style={{
-                color: "#b3b3b3",
-                fontSize: 22,
-                fontWeight: 500,
-                marginBottom: 18,
-              }}
-            >
+            <div className="text-[#b3b3b3] text-[22px] font-medium mb-6">
               Why We Started it?
             </div>
-            <div
-              style={{
-                color: "#6d6a7c",
-                fontSize: 20,
-                fontWeight: 400,
-                lineHeight: 1.5,
-              }}
-            >
+            <div className="text-[#6d6a7c] text-[20px] font-normal leading-relaxed">
               To transform the way SaaS products are showcased and to equalize
               the access to{" "}
-              <span
-                style={{
-                  color: "#8C5BFF",
-                  fontWeight: 600,
-                  textDecoration: "underline",
-                }}
-              >
+              <span className="text-[#8C5BFF] font-semibold underline">
                 high quality product
               </span>{" "}
               demos, empower early-stage startups to drive conversions through
               self-serve experiences.
             </div>
           </div>
-          <div
-            style={{
-              width: 2,
-              background: "linear-gradient(180deg, #ede7ff 0%, #8C5BFF22 100%)",
-              height: 180,
-              alignSelf: "center",
-              opacity: 0.4,
-              borderRadius: 1,
-            }}
-          />
-          <div style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
-            <div
-              style={{
-                fontSize: 38,
-                fontWeight: 700,
-                color: "#3c3450",
-                marginBottom: 8,
-              }}
-            >
-              Our <span style={{ color: "#8C5BFF" }}>Vision</span>
+          <div className="w-1 bg-gradient-to-b from-[#ede7ff] to-[#8C5BFF22] h-full self-center opacity-40 rounded-full" />
+          <div className="flex-1 text-center px-8">
+            <div className="text-[38px] font-bold text-[#3c3450] mb-2">
+              Our <span className="text-[#8C5BFF]">Vision</span>
             </div>
-            <div
-              style={{
-                color: "#b3b3b3",
-                fontSize: 22,
-                fontWeight: 500,
-                marginBottom: 18,
-              }}
-            >
+            <div className="text-[#b3b3b3] text-[22px] font-medium mb-6">
               Why We Started it?
             </div>
-            <div
-              style={{
-                color: "#6d6a7c",
-                fontSize: 20,
-                fontWeight: 400,
-                lineHeight: 1.5,
-              }}
-            >
+            <div className="text-[#6d6a7c] text-[20px] font-normal leading-relaxed">
               To enable every SaaS product to be experienced in{" "}
-              <span
-                style={{
-                  color: "#8C5BFF",
-                  fontWeight: 600,
-                  textDecoration: "underline",
-                }}
-              >
+              <span className="text-[#8C5BFF] font-semibold underline">
                 under 60 seconds
               </span>{" "}
               through interactive demos, without needing a team of developers,
@@ -701,136 +265,54 @@ export default function AboutUsPage() {
             </div>
           </div>
         </div>
-        <div style={{ textAlign: "center", margin: "32px 0 0 0" }}>
-          <div
-            style={{
-              fontSize: 48,
-              fontWeight: 800,
-              color: "#3c3450",
-              marginBottom: 12,
-            }}
-          >
+        <div className="text-center mt-12">
+          <div className="text-[48px] font-extrabold text-[#3c3450] mb-3">
             Meet{" "}
-            <span
-              style={{
-                fontFamily: "monospace",
-                fontWeight: 900,
-                fontSize: 44,
-                verticalAlign: "middle",
-                color: "#8C5BFF",
-                margin: "0 2px",
-              }}
-            ></span>
-            our beautiful <span style={{ color: "#8C5BFF" }}>Team</span>
+            <span className="font-monospace font-bold text-[44px] align-middle text-[#8C5BFF] inline-block mx-1"></span>
+            our beautiful <span className="text-[#8C5BFF]">Team</span>
           </div>
-          <div
-            style={{
-              color: "#8C5BFF99",
-              fontSize: 22,
-              fontWeight: 400,
-              marginBottom: 32,
-            }}
-          >
+          <div className="text-[#8C5BFF99] text-[22px] font-normal mb-12">
             Our philosophy is simple, hire great and give them the resources
             support to do their best work.
           </div>
           <a
             href="#contact"
-            style={{
-              background: "#8C5BFF",
-              color: "#fff",
-              border: "none",
-              borderRadius: 14,
-              fontSize: 26,
-              fontWeight: 600,
-              padding: "18px 80px",
-              boxShadow: "0 2px 8px #8C5BFF22",
-              cursor: "pointer",
-              marginTop: 8,
-              textDecoration: "none",
-              display: "inline-block",
-              transition: "background 0.2s",
-            }}
+            className="bg-[#8C5BFF] text-white border-none rounded-[14px] text-[26px] font-semibold py-4 px-20 shadow-[0_2px_8px_#8C5BFF22] cursor-pointer mt-4 text-decoration-none inline-block transition-colors duration-200"
           >
             Get in Touch
           </a>
         </div>
       </section>
-      <section
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "120px 0 0 0",
-        }}
-      >
-        <TeamCarousel />
-        <div
-          style={{ textAlign: "center", margin: "48px 0 0 0", maxWidth: 900 }}
-        >
-          <div
-            style={{
-              color: "#6d6a7c",
-              fontSize: 24,
-              fontWeight: 400,
-              marginBottom: 32,
-              fontStyle: "normal",
-            }}
-          >
+      <section className="w-full flex flex-col items-center justify-center mb-24">
+        <div className="text-center mt-24 max-w-[900px]">
+          <div className="text-[#6d6a7c] text-[24px] font-normal mb-12 font-normal">
             “It&apos;s a statement of who we are and where we&apos;re headed.
             Building it right demands a team that is not only skilled but
             aligned in mindset, values, and commitment to excellence.”
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+          <div className="flex flex-col items-center">
             <Image
               src="https://randomuser.me/api/portraits/men/75.jpg"
               alt="Soumya Ranjan Nayak"
               width={48}
               height={48}
-              style={{
-                borderRadius: "50%",
-                objectFit: "cover",
-                marginBottom: 8,
-              }}
+              className="border-radius-50% object-cover mb-3"
             />
-            <div style={{ fontWeight: 700, fontSize: 18, color: "#3c3450" }}>
+            <div className="text-[#3c3450] text-[18px] font-bold">
               Soumya Ranjan Nayak
             </div>
-            <div style={{ color: "#8C5BFF", fontSize: 16, fontWeight: 500 }}>
+            <div className="text-[#8C5BFF] text-[16px] font-medium">
               CEO, Marvedge
             </div>
           </div>
         </div>
       </section>
-      <ContactFormSection />
-      <section
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          margin: "32px 0 0 0",
-        }}
-      >
-        <div
-          style={{
-            width: "90%",
-            maxWidth: 1400,
-            display: "flex",
-            flexDirection: "row",
-            gap: 64,
-            alignItems: "flex-start",
-            justifyContent: "center",
-          }}
-        ></div>
+      {/* Reduce gap between CEO and contact form */}
+      <div className="mt-[-120]">
+        <ContactFormSection />
+      </div>
+      <section className="w-full flex justify-center items-start mt-24">
+        <div className="w-[90%] max-w-[1400px] flex flex-row gap-16 items-start justify-center"></div>
       </section>
 
       <Footer />

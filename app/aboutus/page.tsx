@@ -167,7 +167,7 @@ export default function AboutUsPage() {
           </h1>
           <div className="text-[#6d6a7c] text-[22px] font-normal mt-5">
             Empowering every SaaS product to deliver an interactive demo in
-            under 60 seconds 2D 2D
+            under 60 seconds 2D
             <br />
             no developers, designers, or sales teams needed.
           </div>
@@ -265,7 +265,7 @@ export default function AboutUsPage() {
             </div>
           </div>
         </div>
-        <div className="text-center mt-12">
+        {/* <div className="text-center mt-12">
           <div className="text-[48px] font-extrabold text-[#3c3450] mb-3">
             Meet{" "}
             <span className="font-monospace font-bold text-[44px] align-middle text-[#8C5BFF] inline-block mx-1"></span>
@@ -281,9 +281,9 @@ export default function AboutUsPage() {
           >
             Get in Touch
           </a>
-        </div>
+        </div> */}
       </section>
-      <section className="w-full flex flex-col items-center justify-center mb-24">
+      {/* <section className="w-full flex flex-col items-center justify-center mb-24">
         <div className="text-center mt-24 max-w-[900px]">
           <div className="text-[#6d6a7c] text-[24px] font-normal mb-12 font-normal">
             “It&apos;s a statement of who we are and where we&apos;re headed.
@@ -306,7 +306,7 @@ export default function AboutUsPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       <div className="mt-[-120]">
         <ContactFormSection />
       </div>

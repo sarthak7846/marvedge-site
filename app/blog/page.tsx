@@ -80,52 +80,6 @@ function BlogCard({
             </span>
           ))}
         </div>
-        <h3
-          style={{ fontSize: 26, fontWeight: 700, color: "#4c3c4c", margin: 0 }}
-        >
-          {title}
-        </h3>
-        <p style={{ color: "#6d6a7c", fontSize: 18, margin: "10px 0 16px 0" }}>
-          {summary}
-        </p>
-        <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
-          <span
-            style={{
-              background: "#e6e0fa",
-              color: "#8C5BFF",
-              borderRadius: 8,
-              padding: "4px 14px",
-              fontWeight: 600,
-              fontSize: 15,
-            }}
-          >
-            Finance
-          </span>
-          <span
-            style={{
-              background: "#e6e0fa",
-              color: "#8C5BFF",
-              borderRadius: 8,
-              padding: "4px 14px",
-              fontWeight: 600,
-              fontSize: 15,
-            }}
-          >
-            Website
-          </span>
-          <span
-            style={{
-              background: "#e6e0fa",
-              color: "#8C5BFF",
-              borderRadius: 8,
-              padding: "4px 14px",
-              fontWeight: 600,
-              fontSize: 15,
-            }}
-          >
-            Case Study
-          </span>
-        </div>
       </div>
 
       <div

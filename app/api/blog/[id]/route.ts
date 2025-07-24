@@ -1,5 +1,12 @@
 import { prisma } from "@/app/lib/prisma";
+import { v2 as cloudinary } from "cloudinary";
 import { NextResponse } from "next/server";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
 
 export async function DELETE(req: Request) {
   const url = new URL(req.url);
@@ -25,23 +32,59 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
   }
 
-  const data = await req.json();
-
   try {
+    const formData = await req.formData();
+
+    const title = formData.get("title") as string;
+    const summary = formData.get("summary") as string;
+    const category = formData.get("category") as string;
+    const image = formData.get("image");
+
+    if (!title || !summary || !category) {
+      return NextResponse.json(
+        { error: "Missing required fields." },
+        { status: 400 }
+      );
+    }
+
+    let imageUrl = "";
+
+    if (image && typeof image !== "string") {
+      const arrayBuffer = await (image as File).arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const uploadResult = await new Promise<{ secure_url: string }>(
+        (resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "my-blog-app" },
+            (error, result) => {
+              if (error || !result) reject(error);
+              else resolve(result);
+            }
+          );
+
+          stream.end(buffer);
+        }
+      );
+
+      imageUrl = uploadResult.secure_url;
+    } else if (typeof image === "string") {
+      imageUrl = image;
+    }
+
     const updated = await prisma.blog.update({
       where: { id },
       data: {
-        title: data.title,
-        summary: data.summary,
-        category: Array.isArray(data.category)
-          ? data.category
-          : data.category.split(",").map((s: string) => s.trim()),
-        img: data.img,
+        title,
+        summary,
+        category: category.split(",").map((c) => c.trim()),
+        img: imageUrl,
       },
     });
 
     return NextResponse.json(updated);
-  } catch {
+  } catch (error) {
+    console.error("Update blog error:", error);
     return NextResponse.json({ error: "Failed to update blog" }, { status: 500 });
   }
 }
@@ -64,8 +107,7 @@ export async function GET(req: Request) {
     }
 
     return NextResponse.json(blog);
-  } catch  {
+  } catch {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
-

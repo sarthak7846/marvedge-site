@@ -269,38 +269,20 @@ export default function BlogPage() {
 
     try {
       if (isEditing && editingBlogId) {
-        let uploadedImageUrl = newBlog.img;
+        const formData = new FormData();
+        formData.append("title", newBlog.title);
+        formData.append("summary", newBlog.summary);
+        formData.append("category", newBlog.category.join(","));
 
         if (imageFile) {
-          const imageForm = new FormData();
-          imageForm.append("image", imageFile);
-
-          const imgRes = await fetch("/api/upload-image", {
-            method: "POST",
-            body: imageForm,
-          });
-
-          const imgData = await imgRes.json();
-
-          if (!imgRes.ok) {
-            toast.error(imgData.error || "Image upload failed.");
-            return;
-          }
-
-          uploadedImageUrl = imgData.url;
+          formData.append("image", imageFile);
+        } else {
+          formData.append("image", newBlog.img);
         }
 
         const res = await fetch(`/api/blog/${editingBlogId}`, {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: newBlog.title,
-            summary: newBlog.summary,
-            category: newBlog.category,
-            img: uploadedImageUrl,
-          }),
+          body: formData,
         });
 
         const data = await res.json();
@@ -442,6 +424,7 @@ export default function BlogPage() {
     "kulkarniworkk@gmail.com",
     "ajit@marvedge.com",
     "sarthak@marvedge.com",
+    "rahul@marvedge.com"
   ];
   const userEmail =
     typeof window !== "undefined"
@@ -987,24 +970,28 @@ export default function BlogPage() {
                   ×
                 </span>
               </div>
-              {[
-                "What are the benefits?",
-                "Can I integrate with existing systems?",
-                "What services do you offer?",
-                "How can I get started?",
-              ].map((q) => (
-                <div
-                  key={q}
-                  className="bg-white border border-[#e6e0fa] rounded-[18px] p-7 mb-6"
-                >
-                  <div className="text-[#6d6a7c] font-semibold text-[22px] mb-3">
-                    {q}
+              <div className="mt-10">
+                {[
+                  "What are the benefits?",
+                  "Can I integrate with existing systems?",
+                  "What services do you offer?",
+                  "How can I get started?",
+                ].map((q) => (
+                  <div
+                    key={q}
+                    className="bg-white border border-[#e6e0fa] rounded-[18px] py-5 px-6 mb-4 transition-colors duration-200 hover:border-[#a689ff]"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[#6d6a7c] font-medium text-[18px]">
+                        {q}
+                      </span>
+                      <span className="text-[#b4afd0] text-[22px] font-light">
+                        +
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-[#6d6a7c] font-semibold text-[22px]">
-                    +
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>

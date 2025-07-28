@@ -25,7 +25,7 @@ function BlogCard({
 }) {
   return (
     <div
-      className="bg-gradient-to-br from-white via-[#f6f3ff] to-[#ede7ff] border border-[#e6e0fa] rounded-[32px] shadow-2xl w-[420px] min-h-[480px] max-h-[480px] p-7 flex flex-col mb-8 transition-all duration-300 hover:shadow-[0_16px_48px_#b9aaff55] hover:border-[#b9aaff] hover:-translate-y-2 hover:scale-[1.035]"
+      className="bg-gradient-to-br from-white via-[#f6f3ff] to-[#ede7ff] border border-[#e6e0fa] rounded-[32px] shadow-2xl w-[360px] sm:w-[380px] md:w-[400px] min-h-[480px] max-h-[480px] p-7 flex flex-col mb-8 mx-4 transition-all duration-300 hover:shadow-[0_16px_48px_#b9aaff55] hover:border-[#b9aaff] hover:-translate-y-2 hover:scale-[1.035]"
       style={{ height: "480px" }}
     >
       <Image
@@ -81,7 +81,6 @@ function BlogCard({
           ))}
         </div>
       </div>
-
       <div
         style={{
           display: "flex",
@@ -378,7 +377,7 @@ export default function BlogPage() {
     "kulkarniworkk@gmail.com",
     "ajit@marvedge.com",
     "sarthak@marvedge.com",
-    "rahul@marvedge.com"
+    "rahul@marvedge.com",
   ];
   const userEmail =
     typeof window !== "undefined"

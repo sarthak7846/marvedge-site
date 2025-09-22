@@ -19,6 +19,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}   # store your EC2 PEM private key here
           port: ${{ secrets.PORT }}
           script: |
+            export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.19.0/bin/
             cd /home/${{ secrets.USER }}/dev/marvedge-site   # change this path to your app folder
             echo "🔄 Resetting repo and pulling latest changes..."
             git reset --hard

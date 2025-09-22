@@ -1,0 +1,35 @@
+name: Deploy Next.js to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}   # store your EC2 PEM private key here
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /home/${{ secrets.USER }}/dev/marvedge-site   # change this path to your app folder
+            echo "🔄 Resetting repo and pulling latest changes..."
+            git reset --hard
+            git pull origin main
+
+            echo "📦 Installing dependencies..."
+            npm install --production
+
+            echo "⚡ Building Next.js app..."
+            npm run build
+
+            echo "🚀 Restarting app with PM2..."
+            pm2 restart marvedge-site || pm2 start npm --name "marvedge-site" -- run start
+            pm2 save

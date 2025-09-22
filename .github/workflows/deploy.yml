@@ -22,7 +22,7 @@ jobs:
             cd /home/${{ secrets.USER }}/dev/marvedge-site   # change this path to your app folder
             echo "🔄 Resetting repo and pulling latest changes..."
             git reset --hard
-            git pull origin main
+            git pull origin master
 
             echo "📦 Installing dependencies..."
             npm install --production

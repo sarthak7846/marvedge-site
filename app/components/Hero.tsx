@@ -17,7 +17,7 @@ const Hero: React.FC = () => {
     { text: "Turn CLICK's Into", color: "text-gray-700" },
     { text: "Customers with", color: "text-[#7C55D7]" },
     { text: "Interactive", color: "text-[#7C55D7]" },
-    { text: "Demos", color: "text-gray-700" },
+    { text: "Dddddeeeemmmmmooooosssss", color: "text-gray-700" },
   ];
 
   const controls = useAnimationControls();
